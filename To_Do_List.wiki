@@ -1,10 +1,11 @@
 = To Do List =
 
-== task ==
+== [[task/task|task]] ==
 
 * [ ] 同步 vim
-* [ ] 百度云下载 book: java8 in action
-* [ ] -- 2016-10-19 
+* [ ] git commit 脚本, 方便写入 -m '时间'
+* [ ] 百度云下载 book: java8 in action, java reflection in action
+* [ ] -- 2016-10-19, 做好 wiki 笔记
 
 == Knowledge ==
 
@@ -16,7 +17,9 @@
 		* [ ] oracle 官网中的英文课程
 		* [ ] book: java8 in action
 	* [X] annotation
-	* [ ] reflection	-- 2016-10-19 
+	* [ ] reflection	
+		* [ ] 官网文档 -- 2016-10-19 
+		* [ ] book: java reflection in action
 	* [ ] the extension mechanism
 	
 * [ ] groovy
