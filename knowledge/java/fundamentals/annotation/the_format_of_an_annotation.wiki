@@ -1,0 +1,38 @@
+= basics =
+== the form of an annotation ==
+{{{
+	注解长的像这样: @Entity, @Override.
+	注解可以包含元素(elements), 元素可以有名字, 也可以没有:
+	
+	@Author(
+		name = "codergege",
+		date = "2016-10-18"
+	)
+	class MyClass { ... }
+	
+	or
+
+	@SuppressWarnings(value = "unchecked")
+	void myMethod() { ... }
+
+	如果只有一个元素, 元素名称可以省略.
+
+	@SuppressWarnings("unchecked")
+	void myMethod() { ... }
+	
+	如果注解没有元素, 那么括号也可以省略, 就像 @Override.	
+
+	在同一个声明处, 可以存在多个注解:
+	
+	@Author(name = "Jane Doe")
+	@EBook
+	class MyClass { ... }
+
+	repeating annotation: 多个注解有同样的类型(注解名称相同).
+	
+	@Author(name = "Jane Doe")
+	@Author(name = "John Smith")
+	class MyClass { ... }
+	
+	java8 支持 repeating annotation.
+}}}

@@ -1,23 +1,38 @@
 = To Do List =
+
 == Knowledge ==
+
 === Programming ===
+
 * [ ] java funndamentals
-	* [ ] annotation
+	* [ ] java8 新特性
+		* [ ] 实验楼中的中文课程
+		* [ ] oracle 官网中的英文课程
+		* [ ] book: java8 in action
+	* [X] annotation
 	* [ ] reflection
+	* [ ] the extension mechanism
+	
 * [ ] groovy
 	* [ ] book: groovy in action 2edition
 	* [ ] getting started
 	* [ ] tools
 	* [ ] language specification
 	* [ ] groovy module guides
+
 * [ ] gradle
+
 * [ ] git
 	* [ ] 补充笔记 git/best_practice
+	 
 * [ ] linux
 	* [ ] vpn
 	* [ ] dpkg 用法
+	
 === Book ===
+
 == Tool Improve ==
+
 * [ ] vim
 	* [ ] vimwiki html template
 	* [ ] vim plugin
@@ -25,4 +40,5 @@
 		* [ ] learn javacomplete2
 		* [ ] learn nerdcommenter
 	* [ ] book: learning vimscript the hard way
+	* [ ] vim 折叠方案
 	

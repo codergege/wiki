@@ -1,4 +1,16 @@
 {{{
+likelihood				-- n 可能, 可能性
+eligible				-- adj 合格的; n 合格者
+brittle					-- adj 易碎的
+excessive				-- adj 过多的, 过度的
+concise					-- adj 简洁的
+compactly				-- adv 细密地, 简洁地
+bulky					-- adj 笨重的, 体积大的
+unwieldy				-- 笨重的, 不便利的
+cumbersome				-- 笨重的, 难以携带的, 冗长的
+aggregate				-- vt 使聚集; adj 总计的, 聚合的; n 聚集体, 合计
+cardinality				-- n 基数
+conjunction				-- n 连接, 联合
 concentrate
 enlighten
 succinct

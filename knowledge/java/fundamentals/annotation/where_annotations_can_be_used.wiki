@@ -1,0 +1,27 @@
+= annotation =
+== where annotations can be used ==
+{{{
+注解可以声明的地方:	类, 字段, 方法等元素的声明处. 使用注解时, 约定俗成的每个注解一行.
+
+在 java8 中, 注解还可用当作类型来使用:
+
+	- 创建对象表达式中:
+	 
+		new @Interned MyObject();
+		
+	- 类型装换
+		
+		myString = (@NonNull String) str;
+		
+	- 接口定义
+
+		class UnmodifiableList<T> implements @Readonly List<@Readonly T> { ... }
+		
+	- 异常抛出
+	
+		void monitorTemperature() throws
+			@Critical TemperatureException { ... }
+			
+这种形式的注解被成为 类型注解.
+}}}
+

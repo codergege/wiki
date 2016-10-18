@@ -1,0 +1,11 @@
+= lambda expressions =
+
+== introduction ==
+
+{{{
+lambda expressions 能简洁的表达一个单方法的类实例
+}}}
+
+== lambda expressions 的理想使用场景 ==
+
+

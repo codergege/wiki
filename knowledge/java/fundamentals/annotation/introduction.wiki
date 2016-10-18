@@ -1,0 +1,13 @@
+= introduction =
+
+{{{
+Annotations, a form of metadata, provide data about a program that is not part of the program itself. Annotations have no direct effect on the operation of the code they annotate.
+Annotations have a number of uses, among them:
+
+	- 将一些信息提供给编译器.
+	- 编译时和部署时处理: 一些软件工具可以通过读取 annotation 的信息自动生成代码, xml 文件等.
+	- 运行时处理: 一些注解可以再运行时被检查.
+	
+}}}
+
+
