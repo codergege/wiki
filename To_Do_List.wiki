@@ -1,21 +1,27 @@
 = To Do List =
 
+== task ==
+
+* [ ] 同步 vim
+* [ ] 百度云下载 book: java8 in action
+* [ ] -- 2016-10-19 
+
 == Knowledge ==
 
 === Programming ===
 
 * [ ] java funndamentals
 	* [ ] java8 新特性
-		* [ ] 实验楼中的中文课程
+		* [ ] 实验楼中的中文课程	-- 2016-10-19 
 		* [ ] oracle 官网中的英文课程
 		* [ ] book: java8 in action
 	* [X] annotation
-	* [ ] reflection
+	* [ ] reflection	-- 2016-10-19 
 	* [ ] the extension mechanism
 	
 * [ ] groovy
-	* [ ] book: groovy in action 2edition
-	* [ ] getting started
+	* [ ] book: groovy in action 2edition	
+	* [ ] getting started	
 	* [ ] tools
 	* [ ] language specification
 	* [ ] groovy module guides
