@@ -1,0 +1,49 @@
+{{{
+- sh xxx.sh, bash xxx.sh
+	当脚本中有 source xxx 这种语句时, 得用 bash 执行脚本. sh 执行脚本将找不到 source 命令
+
+- 脚本添加 "环境变量"
+	~/scripts/add-env-demo.sh
+
+- sh 的 $0, $1
+	$0 代表脚本名称, $1 是跟在脚本后的第一个参数, $2...
+
+- if
+	if [ 条件判断式 ]; then
+		...
+	fi
+	可以有多个 [] 用 && 或 || 连接
+
+	if [ ... ]; then 
+		...
+	else
+		...
+	fi
+
+	if [ ... ]; then
+		...
+	elif [ ... ]; then
+		...
+	else
+		...
+	fi
+
+- while
+	while [ ... ]
+	do
+		...
+	down
+
+- for ... do ... done
+	for var in con1 con2 con3...
+	do
+		...
+	done
+
+	数值处理:
+	for (( i=1; i<=$length; i=i+1 ))
+	do
+		...
+	done
+	
+}}}

@@ -1,0 +1,19 @@
+{{{
+版本回退
+1. 查看版本
+1) git log命令显示从最近到最远的提交日志, 如果嫌输出信息太多, 看得眼花缭乱的, 
+可以试试加上 --pretty=oneline 参数
+2) 也可以用 git reflog
+2. git 版本
+在 Git 中, 用 HEAD 表示当前版本, 上一个版本就是 HEAD^, 上上一个版本就是 HEAD^^, 
+当然往上 100 个版本写 100 个 ^ 比较容易数不过来, 所以写成 HEAD~100
+3. git reset
+git reset --hard HEAD^ 
+回退到上一个版本
+如果后悔了, 想回到未来的版本, 那么用 git reflog 查出想要回退的 commit_id
+然后 git reset --hard commit_id 即可
+4. 最佳实践
+1) HEAD指向的版本就是当前版本, 因此, Git允许我们在版本的历史之间穿梭, 使用命令git reset --hard commit_id
+2) 穿梭前, 用 git log 可以查看提交历史, 以便确定要回退到哪个版本
+3) 要重返未来, 用 git reflog 查看命令历史, 以便确定要回到未来的哪个版本
+}}}

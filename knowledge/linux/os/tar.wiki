@@ -1,0 +1,7 @@
+{{{
+压缩
+tar -zcvf filename.tar.gz 要压缩的文件或目录
+解压
+tar -zxvf filename.tar.gz -C 要解压的目录
+	如果要解压到当前目录, 可以省略 -C
+}}}

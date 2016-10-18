@@ -1,0 +1,29 @@
+{{{
+sed [-nefr] [动作]
+-n	: silent 模式, 一般 sed 的用法中, 所有数据会列出到屏幕. -n 参数使只有经过 sed 特殊处理的行(或动作)才会被列出来
+-e	: 直接在指令模式上进行 sed 的动作编辑
+-f	: -f filename 可以执行 filename 内的 sed 动作
+-r	: 使 sed 支持增强的 re 语法
+-i	: 直接修改读取的档案内容, 而不是由屏幕输出
+动作说明:
+[n1[,n2]] function
+n1, n2	: 选择进行动作的行
+function:
+a	: add, 后面可以接字符串, 这些字符串会在新的一行出现, 目前行的下一行
+c	: change, 后面可以接字符串, 这些字符串会取代 n1, n2 之间的行
+i	: insert, 后面可以接字符串, 这些字符串会在新的一行出现, 目前行的上一行
+p	: print, 将某个选择的数据打印出, 通常与 sed -n 配合
+s	: substituent, 1,20s/old/new/g
+----------------------------------------------------------
+sudo cp -a /etc/passwd /tmp , 然后到 /tmp 下做练习
+- 以行为单位的新增删除功能
+nl passwd | sed '2,5d'				- 删除 2~5 行
+nl passwd | sed '2d'				- 删除第 2 行
+nl passwd | sed '3,$d'				- 删除第 3 到最后行
+nl passwd | sed '2a Drink tea or ......\
+> drink beer?'						- 可以插入多行, 用 \ 来表示换行
+nl passwd | sed '2,5c No data'		- 将 2~5 行的内容替换为 No data
+nl passwd | sed -n '5,7p'			- 列出 5~7 行
+fconfig | grep 'inet 地址' | sed -n '1p' | sed 's/^.*地 址://g' | sed 's/广播.*$//g'
+sed '/^$/d' 删除空白行
+}}}

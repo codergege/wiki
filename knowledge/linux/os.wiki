@@ -1,0 +1,4 @@
+= os =
+* [[os/modify_command_tip|修改命令行提示符]] -- 修改 shell 提示符
+* [[os/tar|tar]] -- tar 用法
+* [[os/wget|wget]] -- wget 用法, 如何 wget 下载 jdk

@@ -1,0 +1,37 @@
+= To Do List =
+* [[To_Do_List|To Do List]]								-- things to be done
+= Knowledge =
+== Vabulary ==
+* [[knowledge/dic|词汇]]								-- 词汇 
+== Config ==
+* [[knowledge/config/mysql|mysql]]						-- mysql config file
+* [[knowledge/config/mssm|mssm]]						-- maven spring springmvc mybatis
+* [[knowledge/config/web|web]]							-- template files of html, css, javascript, jsp
+
+== Linux ==
+* [[knowledge/linux/os|os]]								-- linux 操作系统笔记
+* [[knowledge/linux/shell|shell]]						-- shell 使用笔记, e.g. sed,awk...
+* [[knowledge/linux/script|script]]						-- 一些写好的 bash 脚本
+* [[knowledge/linux/vim|vim]]							-- vim 笔记
+* [[set_up_develop_env|set up develop environment]]		-- 设置开发环境
+== Java == 
+* [[knowledge/java/fundamentals|fundamentals]]			-- java 基础
+* [[knowledge/java/spring|spring]]						-- spring
+* [[knowledge/java/springmvc|springmvc]]				-- springmvc
+* [[knowledge/java/mybatis|mybatis]]					-- mybatis
+
+== web ==
+* [[knowledge/web/html|html]]							-- html 
+* [[knowledge/web/css|css]]								-- css 
+* [[knowledge/web/javascript|javascript]]				-- javascript
+* [[knowledge/web/jquery|jquery]]						-- jquery
+* [[knowledge/web/easyui|easyui]]						-- easyui 
+
+== Project Management ==
+* [[knowledge/project-management/git|git]]				-- git 
+* [[knowledge/project-management/maven|maven]]			-- maven
+* [[knowledge/project-management/gradle|gradle]]		-- gradle
+
+== Database ==
+* [[knowledge/database/mysql|mysql]]					-- mysql
+* [[knowledge/database/oracle|oracle]]					-- oracle

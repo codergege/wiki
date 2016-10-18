@@ -1,0 +1,44 @@
+{{{
+1. git 的三个区
+工作区(work) 缓存区(stage) 版本库(repository)
+2. git 常用命令
+1) git status 查看 work, stage 状态
+2) 添加到 stage
+	git add filename 增加一个文件到 stage
+	git add . 增加当前目录的所有文件到 stage
+3) 提交到 repository
+	git commit -m 'xxx' 将 stage 文件提交到 repository
+	git commit -am 'xxx' 直接从 work 提交到 repository
+4) git log, git reflog
+	查看 commit log, 查看每一次操作的记录
+	log 与 reflog 经常用来恢复 work 到某一个 repository 版本
+5) 对比
+	git diff [-- filename]
+		work 与 stage 之间的差异对比
+	git diff --staged [-- filename]
+		stage 与 repository 之间的差异对比
+	git diff master [-- filename]
+		work 与 repository 的 master 分支之间的差异对比
+	git fidd HEAD [-- filename]
+6) 撤销
+这里都是单个文件的情形
+场景1：当你改乱了工作区某个文件的内容, 想直接丢弃工作区的修改时, 用命令 git checkout -- filename
+	git checkout其实是用版本库里的版本替换工作区的版本,无论工作区是修改还是删除,都可以“一键还原”
+场景2：当你不但改乱了工作区某个文件的内容, 还添加到了暂存区时, 想丢弃修改, 分两步, 
+第一步用命令 git reset HEAD filename, 就回到了场景1, 第二步按场景1操作
+场景3：已经提交了不合适的修改到版本库时, 想要撤销本次提交, 参考版本回退, 不过前提是没有推送到远程库
+7) 删除
+	git rm filename
+		work 中的文件已经被删除了的前提下, 这个命令删除 stage 中的文件
+	git rm -f filename
+		删除 stage 中的文件, work 中的文件同时删除
+	git rm --cached filename
+		删除 stage 中的文件, work 中的文件不会被删除
+8) 恢复
+	git checkout commit_id/HEAD filename 
+		如果不写 commit_id 或 HEAD, git checkout filename 命令会先找 stage 中的 file 进行恢复, 
+		当 stage 中没有这个 file 时, 再去当前版本(HEAD)的 repository 中的 file 进行恢复.
+		这就是 6) 中场景 1 与场景 2 的原理
+	git reset --hard commit_id
+		还原到某个版本, 详情看 git-recover-file.txt 
+}}}

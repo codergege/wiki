@@ -1,0 +1,7 @@
+{{{
+1. 进入目录
+2. git init
+3. 设置贡献者
+	git config --global user.name 'codergege'
+	git config --global user.email 'codergege@163.com'
+}}}

@@ -1,0 +1,23 @@
+= To Do List =
+== Knowledge ==
+=== Programming ===
+* [] java funndamentals
+	* [] annotation
+	* [] reflection
+* [] groovy
+	* [] book: groovy in action 2edition
+	* [] getting started
+	* [] tools
+	* [] language specification
+	* [] groovy module guides
+* [] gradle
+* [] git
+	* [] 补充笔记 git/best_practice
+* [] linux
+	* [] vpn
+	* [] dpkg 用法
+=== Book ===
+== Tool Improve ==
+* [] vim
+	* [] vimwiki html template
+	* [] study vim plugin: text-obj-user

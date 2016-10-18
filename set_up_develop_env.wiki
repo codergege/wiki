@@ -1,0 +1,78 @@
+{{{
+-- 安装一些依赖
+apt-get install libncurses5-dev python-dev libgtk-3-dev libx11-dev libxt-dev libxpm-dev
+1. git
+第一个安装的东西必须是 git, 因为很多配置, 脚本要去 github clone 下来
+1) apt-get install git
+2) 接下来开始 clone
+	- study-note
+	在 ~ 目录下
+	git clone git@github.com:codergege/study-note
+	mv study-note note
+	
+	- script
+	在 ~ 目录下, 
+	git clone git@github.com:codergege/script
+
+2. 安装配置 vim
+ 编译安装最新版本 vim, 并用 git 管理 
+1) mkdir -p develop/installation
+2) cd develop/installation
+3) git clone https://github.com/vim/vim.git
+4) cd vim/src
+5) 安装依赖, 已经安装
+6) 
+
+./configure --with-features=huge --prefix=/usr/local/vim --enable-gui=gtk3 --enable-pythoninterp=yes --enable-multibyte --with-python-config-dir=/usr/lib/python2.7/config-x86_64-linux-gnu 
+
+./configure --with-features=huge --prefix=/usr/local/vim --enable-gui=gtk3 --enable-pythoninterp=yes --enable-multibyte --with-python-config-dir=/usr/lib/python2.7/config-i386-linux-gnu
+
+32 位是 config-i386-linux-gnu
+注意！ 这里的 python-config-dir 64 位和 32 位的 ubuntu 不一样的!!
+7) sudo make
+8) sudo make install
+9) cd /usr/bin
+10) sudo ln -sf /usr/local/vim/bin/vim vim,  sudo ln -sf /usr/local/vim/bin/vimtutor vimtutor 
+11) cd 
+12) git clone https://github.com/codergege/vim.git
+13) mv vim .vim; cd .vim ; git config --global user.name "codergege"; git confi --global user.email "codergege@163.com"; 看看 git remote -v
+14) cd
+15) ln -sf .vim/vimrc .vimrc
+16) cd .vim, vim .gitignore, 加入 bundle/ 
+17) 参考 vimrc, 去下载 vundle 插件
+
+3. 安装 java
+有了 script 安装脚本就十分方便了
+source script/install_java.sh java7 64
+source script/install_java.sh java8 64
+source script/switch_java.sh java7
+
+4. 安装 tomcat
+source script/install_tomcat.sh tomcat7
+source script/install_tomcat.sh tomcat8
+source script/switch_tomcat.sh tomcat7
+
+5. 安装 mysql
+# for install mysql 需要先装上 libaio 这个依赖
+apt-get install libaio-dev
+# mysql
+1) 切换到 root 用户
+	su
+2) 然后执行
+	source /home/codergege/script/install_mysql_high.sh 64 
+	#source /home/codergege/script/install_mysql_high.sh 32
+3) 安装脚本执行完后, 就可以启动 mysql 了
+	service mysql start
+4) 添加 root 密码
+	mysql -u root 回车
+	As of MySQL 5.7.6, use this statement: 
+	mysql> use mysql
+	mysql> select user, host, HEX(authentication_string) from user;
+	Assigning Root Account Password
+	As of MySQL 5.7.6 user ALTER USER:
+	mysql> alter user 'root'@'localhost' identified by '你的密码';
+
+6. 重启 shutdown -r now
+在 3-5 步执行完后, 重启
+
+}}}

@@ -1,0 +1,17 @@
+{{{
+---------------- grep -------------------------------------------
+dmesg | grep 'eth'
+	dmesg 列出核心讯息, 再用 grep 找出含 eth 的行
+dmesg | grep -n 'eth'
+	同时列出行号
+dmesg | grep -n -A3 -B2 'eth'
+	A 同时列出后 3 行, B 同时列出后 2 行
+grep -n 'the' xxx.txt
+	对 xxx.txt 进行搜索
+grep -vn 'the' xxx.txt
+	v 反向选择, 即打印不含 the 的那些行
+grep -in 'the' xxx.txt
+	i ignore cases, 忽略大小写, The, THE 都会匹配
+grep -n 't[ea]st' xxx.txt
+	匹配 test 或 tast
+}}}

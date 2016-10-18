@@ -1,0 +1,24 @@
+{{{
+1. 先有本地库, 后建远程仓库, 如何进行关联
+有两种方式, 一种是使用账户密码, 一种是使用 SSH KEY 方式
+windows 下有个 github 客户端, 这个客户端登陆后以后提交就不用每次填写账号密码了
+所以 windows 下用第一种方式比较方便
+1) 再 github.com 新建一个 repository
+2) push an existing repository from the command line
+git remote add origin https://github.com/codergege/StudyNote.git
+git push -u origin master
+	第一次推送要加上 -u 
+3) 以后提交到 remote repository, 只要
+git push origin master
+就可以把本地 master 分支的最新修改推送到 github 中了
+
+2. 从零开发, 最好的方式是先创建远程, 然后从远程库中克隆
+但是 eclipse 开发时, 其实这种方式比较麻烦
+1) 在 github.com 上创建新的 repository, 注意勾选上 ...README
+2) git clone
+
+3. 修改远程仓库名称
+git remote -v
+git remote rm origin
+git remote add StudyNote https://github.com/codergege/StudyNote.git
+}}}

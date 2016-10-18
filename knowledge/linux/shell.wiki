@@ -1,0 +1,7 @@
+= shell =
+* [[shell/sed|sed]] -- sed
+* [[shell/awk|awk]]
+* [[shell/bash|bash]] -- 一些在 bash shell 中使用的语法, e.g. 变量测试, 替换 
+* [[shell/regular_expression|regular expression]] -- 正则表达式
+* [[shell/grep|grep]] -- grep
+* [[shell/shell_script|shell script]] -- shell script 语法

@@ -1,0 +1,8 @@
+{{{
+wget -P 目录 网址
+1. 到官网的 jdk 下载页面, 在下载链接处右键 -> 查看元素, 复制 href
+2. 
+wget --no-check-certificate --no-cookies --header "Cookie: oraclelicense=accept-securebackup-cookie" -P /home/codergege/develop/installation url
+将 url 替换成第一步得到的链接
+3. java7 版本, 7u65 以上版本连接中是 otn 而不是 otn-pub, 所以无法用 wget 下载; 下载 7u65 版本就好了
+}}}

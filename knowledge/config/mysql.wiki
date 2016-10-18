@@ -1,0 +1,2 @@
+= mysql =
+* [[mysql/mysql_high_my.cnf|mysql_high_my.cnf]] -- mysql 5.7.6 以及更高版本
