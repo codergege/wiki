@@ -1,11 +1,6 @@
 = To Do List =
 
-== [[task/task|task]] ==
-
-* [ ] 同步 vim
-* [ ] git commit 脚本, 方便写入 -m '时间'
-* [ ] 百度云下载 book: java8 in action, java reflection in action
-* [ ] -- 2016-10-19, 做好 wiki 笔记
+== [[dailytask/dailytask|dailytask]] ==
 
 == Knowledge ==
 
@@ -35,8 +30,12 @@
 	* [ ] 补充笔记 git/best_practice
 	 
 * [ ] linux
-	* [ ] vpn
-	* [ ] dpkg 用法
+	* [ ] os
+		* [ ] vpn
+		* [ ] dpkg 用法
+	* [ ] scripts
+		* [ ] 一键安装 vim 并配置好的 sh 脚本
+
 	
 === Book ===
 

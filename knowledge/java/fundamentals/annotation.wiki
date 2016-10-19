@@ -1,4 +1,4 @@
-= annotation =
+= 注解 =
 
 * [[annotation/introduction|introduction]]
 

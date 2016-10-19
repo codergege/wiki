@@ -1,0 +1,30 @@
+= 变量 =
+
+- 变量的删除与替换
+	
+{{{
+${变量#关键字} -- 若变量内容从头开始的数据符合关键字, 则将符合的最短数据删除
+${变量##关键字} -- 若变量内容从头开始的数据符合关键字, 则将符合的最长数据删除
+${变量%关键字} -- 若变量内容从尾开始的数据符合关键字, 则将符合的最短数据删除
+${变量%%关键字} -- 若变量内容从尾开始的数据符合关键字, 则将符合的最长数据删除
+${变量/old/new} -- 若变量内容符合 old, 则第一个 old 被 new 代替
+${变量//old/new} -- 若变量内容符合 old, 则所有的 old 被 new 代替
+}}}
+
+- 变量的测试与内容替换
+	
+{{{
+变量设定方式	 -- str 未定义 -- str 是空字符串 -- str 已设定为非空字符串
+var=${str-expr}  -- var=expr   -- var=""         -- var=$str
+var=${str:-expr} -- var=expr   -- var=expr       -- var=$str
+}}}
+
+- 获取文件名与目录名的指令
+
+{{{
+basename, dirname
+$>basename /etc/vim/vimrc.local
+vimrc.local
+$>dirname /etc/vim/vimrc.local
+/etc/vim
+}}}
