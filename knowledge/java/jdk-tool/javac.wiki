@@ -1,0 +1,66 @@
+= javac =
+
+* javac [ options ] [ sourcefiles ] [ classes] [ @argfiles ]
+
+{{{
+参数顺序没有要求
+}}}
+
+* options
+
+{{{
+quick start:
+
+	- javac greeting/Hello.java
+	
+		编译　greeting 包下的 Hello.java
+	
+	- javac -d $projectDir/target/classes greeting/Hello.java
+
+		指定　class 文件存放目录
+		
+javac 
+-cp path or -classpath path
+
+	如果指定, 将覆盖环境变量的　CLASSPATH
+
+-d directory
+
+	指定　class 文件目录. 这个目录必须存在, javac 不会去创建它.
+	
+    If you specify -d /home/myclasses and the class is called com.mypackage.MyClass, then the class file is /home/myclasses/com/mypackage/MyClass.class.d directory
+
+-encoding encoding
+
+    Sets the source file encoding name, such as EUC-JP and UTF-8. If the -encoding option is not specified, then the platform default converter is used.
+
+-g
+
+    Generates all debugging information, including local variables. By default, only line number and source file information is generated.
+
+-g:none
+
+    Does not generate any debugging information.
+    
+-g:[keyword list]
+
+    Generates only some kinds of debugging information, specified by a comma separated list of keywords. Valid keywords are:
+
+    source
+
+        Source file debugging information.
+    lines
+
+        Line number debugging information.
+    vars
+
+        Local variable debugging information.
+
+-help
+
+    Prints a synopsis of standard options.
+
+-parameters
+
+    Stores formal parameter names of constructors and methods in the generated class file so that the method java.lang.reflect.Executable.getParameters from the Reflection API can retrieve them.
+}}}

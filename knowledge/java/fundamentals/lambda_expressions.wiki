@@ -1,11 +1,61 @@
 = lambda expressions =
 
-== introduction ==
+* introduction
 
 {{{
 lambda expressions 能简洁的表达一个单方法的类实例
 }}}
 
-== lambda expressions 的理想使用场景 ==
+* 语法
+	
+{{{
+lambda 表达式由3个部分组成:
+	- 形参
+	- 箭头 ->
+	- 方法体
+	
+parameter -> expression body
 
+lambda 的几个特征:
+	- 可选的类型声明: 形参的类型不必须声明, 编译器可以根据参数的值自动判断.
+	- 可选的形参的括号: 只有单个形参时, 可以省略(), 但是多个参数必须加().
+	- 可选的{}: 方法体只有一个表达式时, 可以省略{}, 但是多个表达式必须用{}.
+	- 可选的 return: 可以省略; 如果不省略, 方法体必须加{}.
 
+lambda 可以实例化函数式接口, 并可以把该实例作为参数传递给方法使用. 这就像是 java 的方法实现了一个接口, 通过传入参数的不同实现多态性.
+
+lambda 可以访问 final 变量
+}}}
+
+* lambda expressions 的理想使用场景 
+
+* 方法引用 
+
+{{{
+java8 中, 所有方法都是对象, 可以通过方法名称引用.
+}}}
+*唯一用途是简写 lambda.*
+{{{
+可以引用的方法: 静态方法, 实例方法, 使用 new 操作符的构造器方法　(MyClass::new)
+
+		// 方法引用的例子
+		List<String> names = new ArrayList<String>();
+		names.add("Peter");
+		names.add("赵波");
+		names.add("djh");
+		names.add("Jack");
+		//对象的引用
+		//names.forEach(System.out::println);
+		//下面是错误的用法
+		//names.forEach(System.out.println);
+		//如果用 lambda, 可以经过一些处理
+		PrintMember<String> printMember = member -> System.out.println(" --> " + member);
+		names.forEach(printMember::print);
+		
+		定义在类内某处的　PrintMember:
+
+		interface PrintMember<T> {
+			void print(T member);
+		}
+
+}}}

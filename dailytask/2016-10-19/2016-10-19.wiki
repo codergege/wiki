@@ -1,8 +1,8 @@
 = 2016-10-19 =
 
-* [ ] 同步 vim
-* [ ] git commit 脚本, 方便写入 -m '时间'
-* [ ] 百度云下载 book: java8 in action, java reflection in action
+* [X] 同步 vim
+* [X] git commit 脚本, 方便写入 -m '时间'
+* [X] 百度云下载 book: java8 in action, java reflection in action
 * [ ] -- 2016-10-19, 做好 wiki 笔记
 
 

@@ -1,0 +1,31 @@
+= java =
+
+
+* synopsis
+
+{{{
+java [options] classname [args]
+
+java [options] -jar filename [args]
+
+options
+
+    Command-line options separated by spaces. See Options.
+
+classname
+
+    The name of the class to be launched.
+
+filename
+
+    The name of the Java Archive (JAR) file to be called. Used only with the -jar option.
+
+args
+
+    The arguments passed to the main() method separated by spaces.
+}}}
+
+* quick start
+
+cd 到 target/classes
+java cn.codergege.demo.MyClass

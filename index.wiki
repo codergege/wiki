@@ -15,6 +15,7 @@
 * [[knowledge/linux/vim|vim]]							-- vim 笔记
 * [[set_up_develop_env|set up develop environment]]		-- 设置开发环境
 == Java == 
+* [[knowledge/java/jdk_tool|jdk tool]] -- jdk 工具, e.g. javac java javah,javadoc ...
 * [[knowledge/java/fundamentals|fundamentals]]			-- java 基础
 * [[knowledge/java/spring|spring]]						-- spring
 * [[knowledge/java/springmvc|springmvc]]				-- springmvc
