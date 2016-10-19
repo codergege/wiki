@@ -1,0 +1,6 @@
+= groovy in action 学习笔记 =
+
+* [[groovy_in_action_note/part1|part1 groovy 语言]]
+* [[groovy_in_action_note/part2|part2 groovy 类库]]
+* [[groovy_in_action_note/part3|part3 groovy 应用]]
+* [[groovy_in_action_note/part4|part4 groovy 附录]]
