@@ -1,6 +1,6 @@
 = 2016-10-20 =
 
-* [ ] 写脚本 install_groovy.sh
+* [ ] 开始 gradle
 * [ ] 修复 javacomplete2 插件错误
 {{{
 处理 function <SNR>44_JobVimOnErrorHandler[3]..javacomplete#server#CompilationJobHandler 时发生错误:
@@ -9,4 +9,3 @@ javac: 无效的标记: "/home/codergege/.vim/bundle/vim-javacomplete2/libs/java
 用法: javac <options> <source files>
 -help 用于列出可能的选项
 }}}
-* [ ] -- 2016-10-20 

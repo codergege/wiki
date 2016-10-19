@@ -18,14 +18,17 @@
 	* [ ] the extension mechanism
 	
 * [ ] groovy
-	* [ ] book: groovy in action 2edition -- 2016-10-20 
-	* [ ] getting started -- 2016-10-20 	
+	* [ ] book: groovy in action 2edition 
+	* [ ] getting started 
 	* [ ] tools
 	* [ ] language specification
 	* [ ] groovy module guides
 
 * [ ] gradle
-
+	* [ ] getting start
+	* [ ] install gradle 脚本
+	* [ ] book: gradle in action -- 2016-10-20 
+	
 * [ ] git
 	* [ ] 补充笔记 git/best_practice
 	 
