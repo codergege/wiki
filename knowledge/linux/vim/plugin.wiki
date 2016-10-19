@@ -1,0 +1,28 @@
+= 可以考虑安装的插件 =
+
+* Plugin 'JavaDecompiler.vim'
+{{{
+反编译插件
+}}}
+* Plugin 'java_src_link.vim'
+{{{
+这个可以查找光标下类的源代码文件, 以后空闲可以试试
+}}}
+* EditJava
+{{{
+也是查找源码的插件
+}}}
+
+* Plugin 'java_checkstyle.vim'
+{{{
+检查 java 代码样式是否符合标准的插件
+}}}
+
+* Plugin 'Java-Syntax-and-Folding'
+{{{
+java syntax 折叠插件, 以后试试能否与 foldmethod=marker 共存
+}}}
+* Plugin 'javalog.vim'
+{{{
+log 文件语法高亮
+}}}

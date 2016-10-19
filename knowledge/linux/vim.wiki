@@ -1,0 +1,4 @@
+= vim =
+
+* [[vim/vimrc_useful|vimrc 参考配置]] -- 一些有参考价值的 vimrc 配置
+* [[vim/plugin|可以考虑安装的插件]]

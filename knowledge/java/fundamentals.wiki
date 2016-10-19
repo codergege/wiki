@@ -2,4 +2,6 @@
 * [[fundamentals/annotation|注解]] -- java annotation 基础
 * [[fundamentals/lambda_expressions|lambda expressions]] -- lambda expressions
 * [[funamentals/functional_interface|函数式接口]]
+* [[fundamentals/stream|流式操作]]
 * [[fundamentals/reflection|反射]] -- java 反射
+* [[fundamentals/collections|集合]]

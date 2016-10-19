@@ -1,0 +1,8 @@
+= vimrc 参考配置 =
+
+* 缩写替换
+{{{
+iab psvm public static void main(String[] args) { }<UP><END><BS><BS>
+iab sout System.out.println();<LEFT><LEFT>
+iab serr System.err.println();<LEFT><LEFT>
+}}}

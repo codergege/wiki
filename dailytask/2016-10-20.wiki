@@ -1,0 +1,11 @@
+= 2016-10-20 =
+
+* [ ] 修复 javacomplete2 插件错误
+{{{
+处理 function <SNR>44_JobVimOnErrorHandler[3]..javacomplete#server#CompilationJobHandler 时发生错误:
+第    9 行:
+javac: 无效的标记: "/home/codergege/.vim/bundle/vim-javacomplete2/libs/javavi/src/main/java/kg/ash/javavi/Javavi.java"
+用法: javac <options> <source files>
+-help 用于列出可能的选项
+}}}
+* [ ] -- 2016-10-20 
