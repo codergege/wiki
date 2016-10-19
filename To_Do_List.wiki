@@ -18,6 +18,7 @@
 	* [ ] the extension mechanism
 	
 * [ ] groovy
+	* [ ] book: groovy in action 第一版中文版
 	* [ ] book: groovy in action 2edition 
 	* [ ] getting started 
 	* [ ] tools
@@ -27,7 +28,7 @@
 * [ ] gradle
 	* [ ] getting start
 	* [ ] install gradle 脚本
-	* [ ] book: gradle in action -- 2016-10-20 
+	* [ ] book: gradle in action 
 	
 * [ ] git
 	* [ ] 补充笔记 git/best_practice
