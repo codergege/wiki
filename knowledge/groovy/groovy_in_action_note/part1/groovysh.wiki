@@ -1,0 +1,9 @@
+= groovysh =
+
+{{{
+groovy:000>"welcome, " + System.properties."user.name"
+===> welcome, codergege
+groovy:000> 'test'.center 20, '-'
+===> --------test--------
+}}}
+

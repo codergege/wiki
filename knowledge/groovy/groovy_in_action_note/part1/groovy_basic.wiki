@@ -1,0 +1,53 @@
+= groovy basic =
+
+* groovy 相对与 java 额外添加的一些语法
+{{{
+- 新的访问 java 对象的表达式与操作符
+- 通过迭代, 允许更多的创建 java 对象的方法
+- 提供新的控制结构, 用于 advanced flow control
+- 使用注解产生不可见代码, 也称 AST 转换
+- 新的数据类型, 它们的操作符和表达式
+- 行尾反斜杠 \ 使下一行继续写的代码视为一行
+- 额外的()使里面的内容当成表达式对待.
+}}}
+* beauty through brevity
+{{{
+1. 
+for java:
+
+java.net.URLEncoder.encode("a b", "UTF-8");
+
+for groovy:
+
+URLEncoder.encode "a b", "UTF-8"
+
+当然为了直观, 建议还是加上().
+
+groovy 自动导入这些包:
+groovy.lang.*
+groovy.util.*
+java.lang.*
+java.util.*
+java.net.*
+java.io.*
+java.math.BigInteger
+java.math.BigDecimal
+}}}
+
+* assert
+{{{
+建议多使用, 很多时候可以用来代替 comment
+一些屏幕输出也可以用 assert 来代替:
+
+println str
+
+assert str == 'some text'
+}}}
+
+* 瞥一眼 [[glance/groovy]]
+这里简单介绍一下 groovy 最常用到的:
+class, script, bean, String, regular expression, number,
+list, map, range, closure, loop, condition.
+
+
+

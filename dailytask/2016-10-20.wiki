@@ -1,7 +1,7 @@
 = 2016-10-20 =
 
 * [ ] 开始 groovy, 因为急着用 gradle, 所以还是先看 groovy in action 第一版的中文版, 看到 part2 的构建为止.
-* [ ] 修复 javacomplete2 插件错误
+* [ ] 修复 javacomplete2 插件错误. 回家把 vim 重新安装一遍, 可能是 vim 没装好的缘故
 {{{
 处理 function <SNR>44_JobVimOnErrorHandler[3]..javacomplete#server#CompilationJobHandler 时发生错误:
 第    9 行:

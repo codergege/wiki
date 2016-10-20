@@ -1,4 +1,23 @@
 {{{
+
+constituent				-- n 选民, 成分, 构成部分; adj 组成的, 构成的, 有选举权的
+invariant				-- adj 无变化的, 不变的; n 不变式, 不变量
+intuitive				-- adj 直观的
+lineage					-- n 血统, 世系
+lenient					-- adj 宽容的, 仁慈的
+scale					-- n 级别
+notion					-- n 概念, 奇想, 打算
+notably					-- adv 尤其, 显著地
+notable					-- n 名人; adj 著名的
+in terms of				-- 依据, 就 ... 而言, 以 ... 为单位
+sole					-- adj 唯一的, 单独的, 专有的, 独占的
+merit					-- n 价值, 功绩; vivt 值得, 应得
+transparent				-- adj 透明的, 想而易见的
+contrast				-- n 对比, 对照; vi 对比; vt 使对比, 和 ... 对照
+blissfully
+blissful
+bliss					-- n 狂喜; vt 使狂喜; 
+calling into			-- 调用
 likelihood				-- n 可能, 可能性
 eligible				-- adj 合格的; n 合格者
 brittle					-- adj 易碎的

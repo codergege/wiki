@@ -1,0 +1,30 @@
+= 瞥一眼 groovy =
+
+* declaring classes
+{{{
+class Book {
+	private String title
+	Book(String theTitle) {
+		title = theTitle
+	}
+	getTitle() {
+		return title
+	}
+}
+
+方法不写访问修饰符就默认是 public 的, java 中默认不写是包内可见. groovy 想达到包内可见的权限可以用注解.
+
+}}}
+* using scripts
+{{{
+Scripts are text files, typically with an extension of *.groovy, that can be executed from
+the command shell like this:
+
+> groovy myfile.groovy
+
+Note that this is very different from Java. In Groovy, you’re executing the source code!
+An ordinary Java class is generated for you and executed behind the scenes. But from
+a user’s perspective, it looks like you’re executing plain Groovy source code.
+}}}
+
+

@@ -1,4 +1,3 @@
-{{{
 [client]
 default-character-set=utf8
 socket=/var/tmp/mysql.sock
@@ -18,4 +17,3 @@ basedir=/usr/local/mysql
 
 [mysqld_safe]
 log-error=/var/log/mysqld.log
-}}}
