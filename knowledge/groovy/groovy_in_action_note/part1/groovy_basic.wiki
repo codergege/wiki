@@ -45,9 +45,10 @@ assert str == 'some text'
 }}}
 
 * 瞥一眼 [[glance/groovy]]
+{{{
 这里简单介绍一下 groovy 最常用到的:
 class, script, bean, String, regular expression, number,
 list, map, range, closure, loop, condition.
-
+}}}
 
 

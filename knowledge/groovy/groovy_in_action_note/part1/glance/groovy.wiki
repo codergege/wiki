@@ -26,5 +26,41 @@ Note that this is very different from Java. In Groovy, you’re executing the so
 An ordinary Java class is generated for you and executed behind the scenes. But from
 a user’s perspective, it looks like you’re executing plain Groovy source code.
 }}}
+* groovy bean
+{{{
+- Generating the accessor methods
+- Allowing simplified access to all JavaBeans (including GroovyBeans)
+- Simplifying registration of event handlers together with annotations that declare
+a property as bindable
+}}}
+* annotation
+{{{
+Groovy also uses annotations to mark code structures for special compiler handling.
 
+@Immutable
 
+A Groovy bean can be marked as immutable, which means that the class becomes final , all its fields become final , and you cannot change its state after construction.
+}}}
+* using grapes
+{{{
+- @Grab
+ 
+@Grab('commons-lang:commons-lang:2.4')
+import org.apache.commons.lang.ClassUtils
+class Outer {
+class Inner {}
+}
+assert !ClassUtils.isInnerClass(Outer)
+assert ClassUtils.isInnerClass(Outer.Inner)
+
+}}}
+* handling text
+{{{
+- GString 
+groovy 中可以用单引号或者双引号, 双引号可以使用占位符:
+
+def nick = 'ReGina'
+def book = 'Groovy in Action, 2nd ed.'
+assert "$nick is $book" == 'ReGina is Groovy in Action, 2nd ed.'
+
+}}}
