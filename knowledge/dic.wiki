@@ -1,5 +1,6 @@
 {{{
-
+derive					-- vt vi 得到, 源于, (从 ... 中)提取
+cue						-- n 线索, 暗示
 indispensable			-- adj 不可缺少的, 不可避开的; n 不可缺少的人或物
 facilitate				-- vt 帮助, 促进, 使容易
 inevitably				-- adv 难免地, 必然地
@@ -25,6 +26,7 @@ likelihood				-- n 可能, 可能性
 eligible				-- adj 合格的; n 合格者
 brittle					-- adj 易碎的
 excessive				-- adj 过多的, 过度的
+succinct
 concise					-- adj 简洁的
 compactly				-- adv 细密地, 简洁地
 bulky					-- adj 笨重的, 体积大的
@@ -35,20 +37,19 @@ cardinality				-- n 基数
 conjunction				-- n 连接, 联合
 concentrate
 enlighten
-succinct
-succinct
 proficient
-mundane
 digested
 implicitly
+explicitly
 respectively
 proportional
 furiously
+pervasive				-- adj 普遍的, 渗透的, 弥漫的; adv 无处不在地, 遍布地; n 无处不在, 遍布
+mundane
 trivial 
 Abbreviations
 essence 
-explicitly
-painstakingly
+painstakingly			--　adv 刻意, 刻苦地, 煞费苦心
 definitely 
 Pending
 Retention
@@ -57,5 +58,5 @@ caveat
 reiterate
 utilize
 typeface
-precludes
+preclude				-- vt 排除, 妨碍, 组织
 }}}

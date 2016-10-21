@@ -1,0 +1,85 @@
+= datatype =
+
+* 字符串
+{{{
+- groovy 中的字符串有 5 种, ', ", ''', """, /
+
+' ''' 不是 GString
+" """ / 是 GString
+
+/ 指明不转义 \, 只有 \u 才进行转义
+
+- GString 的组成 
+
+me = 'Tarzan'
+you = 'Jane'
+line = "me $me - you $you"
+assert line == 'me Tarzan - you Jane'
+assert line instanceof GString
+assert line.strings[0] == 'me '
+assert line.strings[1] == ' - you '
+assert line.values[0] == 'Tarzan'
+assert line.values[1] == 'Jane'
+
+可以看到, GString 是由 strings 和 values 两部分组成的.
+groovy 修改字符串的答案是:虽然不能使用 String, 但是可以使用 StringBuffer! 在 StringBuffer,可以使用 << 操作符追加文本和下标操作符进行文本替换, 在一个字符串上使用 << 操作符将返回一个 StringBuffer, 下面是表 3.3 通过使用 StringBuffer 表示的等价的例子:
+
+greeting = 'Hello'
+greeting <<= ' Groovy' // (1) 追加文本和赋值一起完成
+assert greeting instanceof java.lang.StringBuffer
+greeting << '!' //(2) 在 StringBuffer 上追加文本
+assert greeting.toString() == 'Hello Groovy!'
+greeting[1..4] = 'i' //  将子串 ”ello” 替换为 ”i”
+assert greeting.toString() == 'Hi Groovy!'
+
+注意:虽然表达式 stringRef << string 返回的是一个 StringBuffer, 但是这个 StringBuffer 并没有自动赋值给 stringRef (如(1)所示), 在使用一个字符串的时候, 这需要显示的进行赋值; 但在使用 StringBuffer 的时候不需要这样做, 在使用 StringBuffer 的时候, 原来存在的对象被修改(如(2)所示), 在使用字符串的时候我们不能修改原来存在的对象, 所以必须返回一个新的对象.
+}}}
+* [[datatype/regexp|正则表达式]]
+* number
+{{{
+- 
+
+assert 1 == (-1).abs()
+assert 2 == 2.5.toInteger() // conversion
+assert 2 == 2.5 as Integer // enforced coercion
+assert 2 == (int) 2.5 // cast
+assert 3 == 2.5f.round()
+assert 3.142 == Math.PI.round(3)
+assert 4 == 4.5f.trunc()
+assert 2.718 == Math.E.trunc(3)
+assert '2.718'.isNumber() // String methods
+assert 5 == '5'.toInteger()
+assert 5 == '5' as Integer
+assert 53 == (int) '5' // gotcha!
+assert '6 times' == 6 + ' times' // Number + String
+
+注意, 不要对 string 进行 cast, 而是使用 conversion. 
+
+- 一些有用的方法
+
+times, upto, downto, step. 它们都跟一个 closure 参数.
+
+def store = ''
+10.times{
+	store += 'x'
+}
+assert store == 'xxxxxxxxxx'
+
+store = ''
+1.upto(5) { number ->
+	store += number
+}
+assert store == '12345'
+
+store = ''
+2.downto(-2) { number ->
+	store += number + ' '
+}
+assert store == '2 1 0 -1 -2 '
+
+store = ''
+0.step(0.5, 0.1){ number ->
+	store += number + ' '
+}
+assert store == '0 0.1 0.2 0.3 0.4 '
+}}}

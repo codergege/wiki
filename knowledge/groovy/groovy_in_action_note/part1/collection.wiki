@@ -1,0 +1,5 @@
+= 集合类型 =
+
+* [[collection/range|range]]
+* [[collection/list|list]]
+

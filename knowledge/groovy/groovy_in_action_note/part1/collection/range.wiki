@@ -1,0 +1,88 @@
+ = range =
+ 
+* specifying ranges
+{{{
+- 
+range 由 .. 或 ..< 来定义:
+
+left..right
+left..<right
+
+- 
+如果是 ..< 则是半开的区间, 即: 包含 left , 但是不包含 right:
+
+assert (0..10).contains(0)
+assert (0..10).contains(5)
+assert (0..10).contains(10)
+
+assert (0..10).contains(-1) == false
+assert (0..10).contains(11) == false
+
+assert (0..<10).contains(9)
+assert (0..<10).contains(10) == false
+
+def a = 0..10
+assert a instanceof Range
+assert a.contains(5)
+
+// explicit construction
+a = new IntRange(0,10)
+assert a.contains(5)
+
+assert (0.0..1.0).contains(1.0)
+assert (0.0..1.0).containsWithinBounds(0.5)
+
+// Date range
+def today
+= new Date()
+def yesterday = today - 1
+assert (yesterday..today).size() == 2
+
+// String range
+assert ('a'..'c').contains('b')
+
+def log = ''
+for (element in 5..9){
+log += element
+}
+assert log == '56789'
+
+og = ''
+for (element in 9..5){
+log += element
+}
+assert log == '98765'
+
+log = ''
+(9..<5).each { element ->
+log += element
+}
+assert log == '9876'
+}}}
+* ranges are objects
+{{{
+- range 实现了 isCase 方法, 所以可以用来 classification
+
+assert 5 in 0..10
+assert (0..10).isCase(5)
+
+def age = 36
+switch(age){
+case 16..20 : insuranceRate = 0.05 ; break
+case 21..50 : insuranceRate = 0.06 ; break
+case 51..65 : insuranceRate = 0.07 ; break
+default: throw new IllegalArgumentException()
+}
+assert insuranceRate == 0.06
+
+def ages = [20, 36, 42, 56]
+def midage = 21..50
+assert ages.grep(midage) == [36, 42]
+}}}
+* ranges in action
+{{{
+除了 Date String 可以 range, 事实上, 只要满足下面两个条件的类型, 都可以 range:
+1) 实现了 next, previous, 即重载了 ++, -- 操作符
+2) 实现了 java.lang.Comparable, 即重载了 > = < 操作符
+
+}}}

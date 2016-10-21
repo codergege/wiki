@@ -63,4 +63,56 @@ def nick = 'ReGina'
 def book = 'Groovy in Action, 2nd ed.'
 assert "$nick is $book" == 'ReGina is Groovy in Action, 2nd ed.'
 
+就像 shell 中那样去引用变量.
 }}}
+* regular expressions
+{{{
+assert '12345' =~ '/\d+'
+
+=~ find operater
+
+assert 'xxxxx' == '12345'.replaceAll(/\d/, 'x')
+}}}
+* numbers are objects
+{{{
+java 中 numbers 是 primitive type, 而在 groovy 中, 它们是 first-class object. 可以调用方法, 同时也能用 operator.
+}}}
+* using lists, maps, ranges
+{{{
+groovy 增加了对集合的 operators, literals, extra method.
+
+- list
+
+groovy 支持 list 像数组一样的下标操作. list 中的元素可以是不同类型.
+
+- map
+
+groovy 中的 map, 语法上就像是一个 key-value 对的数组:
+
+def http = [
+	100: 'continue',
+	200: 'ok',
+	400: 'bad request'
+]
+assert http[200] == 'ok'
+http[500] = 'internal server error'
+assert http.size() == 4
+
+- range
+
+def x = 1..10
+assert x.contains(5)
+assert !x.contains(15)
+assert x.size() == 10
+assert x.from == 1
+assert x.to == 10
+assert x.reverse() == 10..1
+}}}
+* closures
+* control structure
+* groovy 在 java 环境中的位置
+{{{
+能够以两种方式在 jvm 中运行 groovy class 
+
+}}}
+

@@ -1,0 +1,32 @@
+= list =
+
+* specifying lists
+{{{
+可以有多种途径来定义 list, 最常用的是用 []. list 默认是 java.lang.ArrayList 类型.
+当然也可以 explicitly 指定某一种 *List, 比如 LinkedList.
+range 可以用 toList 方法来转成 list.
+
+List myList = [1, 2, 3]
+assert myList.size() == 3
+assert myList[0] == 1
+assert myList instanceof ArrayList
+
+List emptyList = []
+assert emptyList.size() == 0
+
+List longList = (0..1000).toList()
+assert longList[555] == 555
+
+List explicitList = new ArrayList()
+explicitList.addAll(myList)
+assert explicitList.size() == 3
+explicitList[0] = 10
+assert explicitList[0] == 10
+
+explicitList = new LinkedList(myList)
+assert explicitList.size() == 3
+explicitList[0] = 10
+assert explicitList[0] == 10
+
+
+}}}

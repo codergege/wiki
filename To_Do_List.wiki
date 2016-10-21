@@ -18,7 +18,6 @@
 	* [ ] the extension mechanism
 	
 * [ ] groovy
-	* [ ] book: groovy in action 第一版中文版
 	* [ ] book: groovy in action 2edition 
 	* [ ] getting started 
 	* [ ] tools

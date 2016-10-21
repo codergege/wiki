@@ -1,0 +1,173 @@
+= 正则表达式
+
+* 正则表达式操作符
+{{{
+
+groovy 为了便利性增加了 3 个操作符:
+
+查找操作符 =~
+匹配操作符 ==~
+模式操作符 ~String
+
+}}}
+* 正则符号表
+{{{
+
+在一般情况下,扩展操作符进行贪婪匹配,意思是说这将进行最长的子串匹配,在操 作符后 面增加 一个 ?表示进 行限制 匹配, 你也许想 使用这 个模式 href=”(.*)”从一个HTML描点元素中抽取href属性,但href=”(.*?)”也许更好,第一个版本直到在文本的最后一个双引号时才结束,第二个版本直到下一个双
+引号出现。
+
+. -- Any character
+^ -- Start of line (or start of document, when in single-line mode)
+$ -- End of line (or end of document, when in single-line mode)
+\d -- Digit character
+\D -- Any character except digits
+\s -- Whitespace character
+\S -- Any character except whitespace
+\w -- Word character
+\W -- Any character except word characters
+\b -- Word boundary
+() -- Grouping
+( x | y ) -- x or y , as in (Groovy|Java|Ruby)
+\1 -- Backmatch to group one; for example, find doubled characters with (.)\1
+x * -- Zero or more occurrences of x
+x + -- One or more occurrences of x
+x ? -- Zero or one occurrence of x
+x { m , n } -- At least m and at most n occurrences of x
+x { m } -- Exactly m occurrences of x
+[a-f] -- Character class containing the characters a , b , c , d , e , f
+[^a] -- Character class containing any character except a
+(?is:x) -- Switches mode when evaluating x ; i turns on ignoreCase , s means single-line mode
+
+}}}
+* =~ 和 ==~ 的使用
+{{{
+=~ 返回一个 java.util.regex.Matcher 类型的对象, 注意这个对象可以当成 boolean 用哦!
+==~ 返回一个 boolean 值, 因为它是全匹配
+
+def twister = 'she sells sea shells at the sea shore of seychelles'
+// twister must contain a substring of size 3
+// that starts with s and ends with a
+assert twister =~ /s.a/		// Regex find operator usable in an if statement
+def finder = (twister =~ /s.a/)
+assert finder instanceof java.util.regex.Matcher	// Find expression evaluates to a Matcher object
+// twister must contain only words delimited by single spaces
+assert twister ==~ /(\w+ \w+)*/
+def WORD = /\w+/
+matches = (twister ==~ /($WORD $WORD)*/)
+assert matches instanceof java.lang.Boolean
+assert !(twister ==~ /s.e/)
+def wordsByX = twister.replaceAll(WORD, 'x')
+assert wordsByX == 'x x x x x x x x x x'
+def words = twister.split(/ /)
+assert words.size() == 10
+assert words[0] == 'she'
+}}}
+* patterns in action 
+{{{
+- 
+You’re now ready to do everything you wanted to do with regular expressions, except
+we haven’t covered “do something with each occurrence.” Something and each sounds
+like a cue for a closure to appear, and that’s the case here. String has a method called
+eachMatch that takes a regex as a parameter along with a closure that defines what to
+do on each match.
+
+String.eachMatch(regex){}, Matcher.each{}, String.replaceAll(regex){}
+
+def myFairStringy = 'The rain in Spain stays mainly in the plain!'
+// words that end with 'ain': \b\w*ain\b
+def wordEnding = /\w*ain/
+def rhyme = /\b$wordEnding\b/
+def found = ''
+myFairStringy.eachMatch(rhyme) { match ->
+found += match + ' '
+}
+assert found == 'rain Spain plain '
+
+found = ''
+(myFairStringy =~ rhyme).each { match ->
+found += match + ' '
+}
+assert found == 'rain Spain plain '
+
+// 这个闭包中的 it 引用匹配的字符串
+def cloze = myFairStringy.replaceAll(rhyme){ it-'ain'+'___' }
+assert cloze == 'The r___ in Sp___ stays mainly in the pl___!'
+
+- 像数组一样操作 Matcher 
+
+gdk 增强了 java.util.regex.Matcher 使它可以像数组一样:
+
+def matcher = 'a b c' =~ /\S/
+assert matcher[0] == 'a'
+assert matcher[1..2] == ['b','c']
+assert matcher.size() == 3
+
+- 并行赋值 parallel assignment
+
+def (a,b,c) = 'a b c' =~ /\S/
+assert a == 'a'
+assert b == 'b'
+assert c == 'c'
+
+- pattern 中有分组时的情况
+
+当一个 regex pattern 中有分组时, 每个 matcher 不再是一个单一的字符串, 而是变成了字符串数组:
+
+def matcher = 'a:1 b:2 c:3' =~ /(\S+):(\S+)/
+assert matcher.hasGroup()
+assert matcher[0] == ['a:1', 'a', '1'] // 1st match
+assert matcher[1][2] == '2' // 2nd match, 2nd group
+
+这时, 可以传给闭包一个数组, 也可以根据 parallel assignment 的特性, 将数组中的元素分别传进去, 并给上一个有意义的名称:
+
+def matcher = 'a:1 b:2 c:3' =~ /(\S+):(\S+)/
+matcher.each { full, key, value ->
+assert full.size() == 3
+assert key.size()
+== 1 // a,b,c
+assert value.size() == 1 // 1,2,3
+}
+
+- ~String, 性能问题
+
+~String 将 String 转为 java.util.regex.Pattern 
+
+前面的 =~ 操作符是 implicit pattern construct, ~String 则是 explicit pattern construct, 然后可以通过 matcher 方法去匹配. explicit 这种方式比 implicit 方式快至少 2 倍.
+
+def twister = 'she sells sea shells at the sea shore of seychelles'
+// some more complicated regex:
+// word that starts and ends with same letter
+def regex = /\b(\w)\w*\1\b/
+def many = 100 * 1000
+
+start = System.nanoTime()
+many.times{
+	twister =~ regex
+}
+timeImplicit = System.nanoTime() - start
+
+start = System.nanoTime()
+pattern = ~regex
+many.times{
+	pattern.matcher(twister)
+}
+timePredef = System.nanoTime() - start
+
+assert timeImplicit > timePredef * 2
+
+- patterns for classification
+
+~ 操作符返回的 pattern 对象, 实现了 isCase(String) 方法. 这就是所谓的分类方法.
+
+这个方法对参数进行全匹配, 这是 in, grep, switch 能够方便使用 pattern 的前提:
+
+def fourLetters = ~/\w{4}/
+assert fourLetters.isCase('work')
+assert 'love' in fourLetters
+switch('beer'){
+	case fourLetters: assert true; break
+	default: assert false
+}
+beasts = ['bear','wolf','tiger','regex']
+assert beasts.grep(fourLetters) == ['bear','wolf']
+}}}

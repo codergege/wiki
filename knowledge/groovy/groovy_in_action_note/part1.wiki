@@ -1,3 +1,6 @@
 = part1 groovy 语言 =
 
 * [[part1/your_way_to_groovy|you way to groovy]]
+* [[part1/groovy_basic|groovy basic]]
+* [[part1/datatype|datatype]]
+* [[part1/collection|集合类型]]
