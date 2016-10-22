@@ -1,0 +1,14 @@
+= introduction =
+{{{
+闭包是一个由{}包裹起来的代码组成的对象. 闭包的行为很像方法, 接受参数并返回一个值.
+因为闭包是对象, 所以可以像其他普通对象一样被引用.
+
+Closure envelope = { person -> new Letter(person).send() }
+addressBook.each (envelope)
+
+可以简写为 -> 
+
+addressBook.each { new Letter(it).send() }
+
+如果闭包只需要接受一个参数, 那么 groovy 提供了一个默认的形参 it. 这样就不必事先声明了.
+  }}}

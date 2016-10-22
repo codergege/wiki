@@ -1,0 +1,67 @@
+= the case for closures =
+{{{
+两个典型的应用场景是 集合迭代, 资源处理. 都应用了回调机制. 闭包正是 groovy 方式的回调机制.
+  }}}
+* 1. using iterators
+{{{
+一个典型的任务是迭代一个集合. java5 中是这样做的:
+
+//java5 
+for (ItemType item : list) {
+	// do something with item
+}
+
+使用 groovy 闭包, 可以这样做:
+
+list.each { item -> /* do something with item */ }
+
+java8 中可以用 lambda 表达式做:
+
+list.stream.forEach((item) -> {
+	// do something with item
+		});
+
+groovy 的闭包可以用在任何适合 java8 使用 lambda 的地方, 比如上面的例子:
+
+// groovy closure with java8
+list.stream.forEach { println it }
+
+分离迭代逻辑和每次迭代做什么事情, 是使用闭包的原因之一, 但不是最重要的, 下面处理资源的例子可能是使用闭包的更重要的原因.
+  }}}
+* 2. handling resources with a protocol
+{{{
+在 java 中, 处理 io 时经常要 try ... catch ... finally close， finally 中的 close 还要继续 try catch ...
+在 groovy 中, 只需要这样就可以了:
+
+new File('myfile.txt').eachLine { println it }
+
+File 的 eachLine 方法会帮你处理 打开, 关闭 input stream 的问题. 完全不用去关心.
+
+io stream 资源管理只是全部资源管理问题中的冰山一角而已, 其他的像数据库连接, statement, 事务, 网络连接, 线程池, gui 资源 ...
+
+先看下 java 的资源处理解决方案, 之后再看相应的 groovy 解决方案.
+  }}}
+* 2.1 a common java approach: using inner class
+{{{
+// Java
+interface ResourceUser { // a @FunctionalInterface in Java 8
+	void use(Resource resource)
+}
+resourceHandler.handle(new ResourceUser(){
+	public void use (Resource resource) {
+		resource.doSomething()
+	}
+});
+
+// groovy way
+resourceHandler.handle { resource -> resource.doSomething() }
+
+groovy 闭包的访问域更加灵活, 强大. (java 中内部类机制想访问外部类的属性时, 必须将属性声明为 final 的).
+同时也避免了因为内部类而引起的代码结构混乱.
+  }}}
+* 2.2 an alternative java approach: the template method pattern
+{{{
+不做介绍了, 不用太了解.
+  }}}
+
+

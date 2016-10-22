@@ -1,6 +1,6 @@
 = list =
 
-* specifying lists
+* 1. specifying lists
 {{{
 可以有多种途径来定义 list, 最常用的是用 []. list 默认是 java.lang.ArrayList 类型.
 当然也可以 explicitly 指定某一种 *List, 比如 LinkedList.
@@ -27,6 +27,217 @@ explicitList = new LinkedList(myList)
 assert explicitList.size() == 3
 explicitList[0] = 10
 assert explicitList[0] == 10
-
-
 }}}
+
+* 2. using list operators
+{{{
+gdk 重载了 getAt, putAt 方法, 可以传入参数 range 或 collection of indexes. 
+
+myList = ['a','b','c','d','e','f']
+
+// getAt(Range)
+assert myList[0..2] == ['a','b','c']
+
+// getAt(collection of indexes)
+assert myList[0,2,4] == ['a','c','e']
+
+// putAt(Range)
+myList[0..2] = ['x','y','z']
+assert myList == ['x','y','z','d','e','f']
+
+// Removing elements
+myList[3..5] = []
+assert myList == ['x','y','z']
+
+// Adding elements
+myList[1..1] = [0, 1, 2]
+assert myList == ['x', 0, 1, 2, 'z']
+
+list 还可以用负下标. 从 -1 开始, -1 代表最后一个元素.
+list [-3, -1] 显然就是后三个元素了.
+
+混合使用正负参数都是可以的! list[1, -2] 代表移除第一个和最后一个元素.
+}}}
+* 2.1 adding and removing items
+{{{
+除了可以用下标进行对 list 操作外, 还有一种更猛的方式: + - * <<. 
+plus(Object), plus(Collection), leftShift(Object), minus(Collection), multiply
+注意, minus 只能接受 Collection 参数.
+
+myList = []
+myList += 'a'
+assert myList == ['a']
+
+myList += ['b','c']
+assert myList == ['a','b','c']
+
+myList = []
+myList << 'a' << 'b'
+assert myList == ['a','b']
+
+assert myList - ['b'] == ['a']
+
+assert myList * 2 == ['a','b','a','b']
+}}}
+* 2.2 control structures
+{{{
+list 实现了 isCase 方法, 所以 可以进行 in, switch, grep 操作. 两个 list 的交集(intersection)可以这样: list1.grep(list2)
+在 if 判断表达式中, 如果一个 list 里面没有元素, 那么会换算成 false 哦!
+
+myList = ['a', 'b', 'c']
+assert myList.isCase('a')
+assert 'b' in myList
+
+def candidate = 'c'
+switch(candidate){
+	case myList : assert true; break
+	default: assert false
+}
+
+assert ['x','a','z'].grep(myList) == ['a']
+
+myList = []
+if (myList) assert false
+
+// Lists can be iterated with a 'for' loop
+def expr = ''
+for (i in [1,'*',5]){
+	expr += i
+}
+assert expr == '1*5'
+}}}
+* 3. using list methods
+* 3.1 manipulating list content
+{{{
+<=> 操作符是啥? disjoint: 不相交的
+
+assert [1,[2,3]].flatten() == [1,2,3]
+assert [1,2,3].intersect([4,3,1]) == [3,1]
+assert [1,2,3].disjoint([4,5,6])
+list = [1,2,3]
+popped = list.pop()
+
+assert popped == 3
+assert list == [1,2]
+assert [1,2].reverse() == [2,1]
+assert [3,1,2].sort() == [1,2,3]
+
+// comparing list by first element
+def list = [ [1,0], [0,1,2] ]
+list = list.sort { a,b -> a[0] <=> b[0] }
+assert list == [ [0,1,2], [1,0] ]
+
+// comparing list by size
+list = list.sort { item -> item.size() }
+assert list == [ [1,0], [0,1,2] ]
+
+list = ['a','b','c']
+list.remove(2)
+assert list == ['a','b']
+list.remove('b')
+assert list == ['a']
+
+list = ['a','b','b','c']
+list.removeAll(['b','c'])
+assert list == ['a']
+
+def doubled = [1,2,3].collect{ item ->
+	item*2
+}
+assert doubled == [2,4,6]
+
+def odd = [1,2,3].findAll{ item ->
+	item % 2 == 1
+}
+assert odd == [1,3]
+  }}}
+{{{
+list 中的两大问题, 一是去重, 二是 null 值.
+
+去重有两种方式:
+
+def x = [1, 1, 2, 3, 4]
+def y = [1, 1, 2, 3, 4]
+assert [1, 2, 3, 4] == x.unique()
+assert [1, 2, 3, 4] == x
+assert [1, 2, 3, 4] == new HashSet(y).toList()
+assert [1, 1, 2, 3, 4] == y
+
+用 unique() 方法会作用与 list 本身, HashSet 方法则重新创建一个不重复的 list, 不改变原来的 list.
+这两种方式看需求场合使用.
+
+移除空值也有多种方式:
+
+def x = [1,null,1]
+assert [1,1] == x.findAll{it != null}
+assert [1,1] == x.grep{it}
+
+  }}}
+* 3.2 accessing list content
+{{{
+querying, iterating, accumulating.
+The inject method is inspired by Smalltalk: it uses a closure to inject new functionality.
+That functionality operates on an intermediary result and the current element of the iteration. 
+The first parameter of the inject method is the initial value of the intermediary result.
+find 方法返回第一个满足闭包中条件的元素.
+
+//querying
+def list = [1, 2, 3]
+assert list.first() == 1
+assert list.head() == 1
+assert list.tail() == [2, 3]
+
+lassert ist.last() == 3
+lassert ist.count(2) == 1
+lassert ist.max() == 3
+lassert ist.min() == 1
+
+def even = list.find { item ->
+	item % 2 == 0
+}
+assert even == 2
+
+assert list.every { item -> item < 5 }
+assert list.any { item -> item < 2 }
+
+// Iterating
+def store = ''
+list.each { item ->
+	store += item
+}
+assert store == '123'
+
+store = ''
+list.reverseEach { item ->
+store += item
+}
+assert store == '321'
+
+store = ''
+list.eachWithIndex { item, index ->
+store += "$index:$item "
+}
+assert store == '0:1 1:2 2:3 '
+
+
+// Accumulating
+assert list.join('-') == '1-2-3'
+
+result = list.inject(0) { clinks, guests ->
+	clinks + guests
+}
+assert result == 0 + 1 + 2 + 3
+
+assert list.sum() == 6
+
+factorial = list.inject(1) { fac, item ->
+fac * item
+}
+assert factorial == 1 * 1 * 2 * 3
+
+  }}}
+* 4. lists in action
+{{{
+
+  }}}
+

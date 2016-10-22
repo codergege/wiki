@@ -1,4 +1,9 @@
 {{{
+alleviate				-- vt 减轻, 缓和
+analogous				-- adj 相似的, 可比拟的
+pivot					-- n 枢轴, 支点; adj 枢轴的, 关键的
+intermediary			-- adj 调节的, 媒介的; n 中间人, 媒介
+drastic					-- adj 激烈的, 极端的, 猛烈的
 derive					-- vt vi 得到, 源于, (从 ... 中)提取
 cue						-- n 线索, 暗示
 indispensable			-- adj 不可缺少的, 不可避开的; n 不可缺少的人或物
@@ -60,3 +65,4 @@ utilize
 typeface
 preclude				-- vt 排除, 妨碍, 组织
 }}}
+

@@ -1,0 +1,7 @@
+= 闭包 =
+{{{
+为什么使用闭包, 如何声明和使用闭包, 如何设计适合闭包使用的方法.
+  }}}
+* [[closure/introduction|introductions]] 
+* [[closure/the_case_for_closures|the case for closures]] 
+* [[closure/declaring_closures|declaring closures]] 

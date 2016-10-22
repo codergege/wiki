@@ -4,3 +4,4 @@
 * [[part1/groovy_basic|groovy basic]]
 * [[part1/datatype|datatype]]
 * [[part1/collection|集合类型]]
+* [[part1/closure|闭包]]
