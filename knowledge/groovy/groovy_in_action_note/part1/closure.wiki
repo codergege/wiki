@@ -7,4 +7,5 @@
 * [[closure/declaring_closures|declaring closures]] 
 * [[closure/comparing_the available_options|comparing the available options]] 
 * [[closure/using_closures|using closures]] 
+* [[closure/understanding_closure_scope|understanding closure scope]] 
 

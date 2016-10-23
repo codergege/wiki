@@ -76,8 +76,58 @@ assert twoTimes(5) == 10
 
 curry 方法实际上相当于: def twoTimes = { y -> mult 2, y } 显然这样写太麻烦了.
 
-curry 方法真正的强大之处体现在当 the closure’s parameters are themselves closures.
-
-
+curry 方法真正的强大之处体现在当闭包的参数也是闭包的时候(the closure’s parameters are themselves closures)
 }}}
+*curry 方法将另一个闭包作为参数传入, 解决了闭包功能单一的问题.*
+{{{
+如果想通过闭包 a 解决一个复杂的任务, 该任务需要多种功能结合才能解决, 那就需要 a 去 curry 各个功能进来.
 
+比如想设计一个闭包作为日志记录器, 那么这个闭包就需要去 curry 其他功能了. 
+1) log 闭包得实现 println 功能 a <- 格式化 b <- 过滤 c; 这样就要定义 3 个闭包了.
+2) 需要定义个闭包 d 去 curry  a, b, c 个闭包. d 的参数应该包含 a, b, c, 再加上实际要处理的日志消息就可以了.
+
+下面的例子, 闭包 d 分为了两个, 原理跟 2) 中说的一样的:
+
+// 下面两个是用来 curry 的闭包
+def configurator = { format, filter, line ->
+	filter(line) ? format(line) : null
+}
+def appender = { config, append, line ->
+	def out = config(line)
+	if (out) append(out)
+}
+
+// 单一功能的 a, b, c 闭包
+def dateFormatter = { line -> "${new Date()}: $line" }
+def debugFilter = { line -> line.contains('debug') }
+def consoleAppender = { line -> println line }
+
+// 开始 curry
+def myConf = configurator.curry(dateFormatter, debugFilter)
+def myLog = appender.curry(myConf, consoleAppender)
+
+// 测试
+myLog('here is some debug message')
+myLog('this will not be printed')
+}}}
+* 2.3 closure composition
+{{{
+composition 就像数学中的复合函数 f(g(x)) 的概念是一样的.
+groovy 中的 closure composition 通过 >> << 操作符实现:
+
+def fourTimes = twoTimes >> twoTimes
+def eightTimes = twoTimes << fourTimes
+assert eightTimes(1) == twoTimes(fourTimes(1))
+  }}}
+* *classification via the isCase method*
+{{{
+Closure 实现了 isCase 方法, 使闭包能够用在in, grep, switch 方法. 要实现 isCase 功能, closure 得返回一个 boolean 值.
+
+def odd = { it % 2 == 1}
+assert [1,2,3].grep(odd) == [1, 3]
+switch(10) {
+	case odd : assert false
+}
+if (2 in odd) assert false
+
+  }}}
