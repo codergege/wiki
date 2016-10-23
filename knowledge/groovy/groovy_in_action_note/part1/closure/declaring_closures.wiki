@@ -1,3 +1,98 @@
 = declaring closures =
+{{{
+目前已经学会了闭包跟在一个方法调用的方式. 这种方式是 { param -> do something with param }
+详细介绍完这种方式后, 接下来再另外介绍两种方式: 闭包赋值给一个变量的声明方式, 引用一个已经声明过的方法作为闭包的声明方式.
+  }}}
+* 1. simple declaration
+{{{
+下面的代码展示了闭包的 simple declaration 语法以及一个新的方便的特性. 
+这个特性是当闭包只有一个形参时, 可以使用魔法变量 it, it 就是默认的形参.
 
+// 普通形式
+log = ''
+(1..10).each{ counter -> log += counter }
+assert log == '12345678910'
 
+// 使用 it
+log = ''
+(1..10).each{ log += it }
+assert log == '12345678910'
+
+it 不必声明; 闭包对象是 each 方法的最后一个参数, 所以可以这样缩写而不必加上(). 
+
+闭包可以有多个参数, 参数之间由逗号隔开; 可以为参数设置默认值.
+  }}}
+* 2. using assignments for declaration
+{{{
+第二个声明闭包的方法是直接将闭包赋值给变量:
+
+def printer = { line -> println line }
+
+也有一个特殊的赋值, 赋值给 return 返回值:
+
+	def getPrinter() {
+		return { line -> println line }
+	}
+
+tip: {} 能代表创建一个闭包对象或 groovy 代码块. groovy 代码块可以是类, 接口, 静态代码块, 对象初始化代码块或方法体.
+或者 {} 能与 groovy 关键字一起出现: if, else, synchronized, for, while, switch, try, catch, finally. 
+
+闭包是对象, 它能存储在一个变量中, 能到处传递, 能调用自己定义的方法.
+作为对象, groovy 闭包能被方法 return, 这是与 java8 lambda 最主要的区别.
+  }}}
+* 3. referring methods as closures
+{{{
+第三种声明闭包的方法是复用一个已经声明的方法. 这种闭包称为 method closure 
+因为方法的一些特性与闭包很像, 所以 groovy 允许以闭包的方式复用已经声明了的方法
+引用一个方法作为闭包的操作符是 reference.& 
+reference 指定了当闭包被调用的时候, 哪个实例(的方法)被使用.
+结合下面的例子进行理解:
+
+class SizeFilter {
+	Integer limit
+	boolean sizeUpTo(String value) {
+		return value.size() <= limit
+	}
+}
+
+// groovy bean 构造方法调用
+SizeFilter filter6 = new SizeFilter(limit:6)
+SizeFilter filter5 = new SizeFilter(limit:5)
+
+// method closure assignment
+Closure sizeUpTo6 = filter6.&sizeUpTo
+
+def words = ['long string', 'medium', 'short', 'tiny']
+
+// 调用闭包
+assert 'medium' == words.find (sizeUpTo6)
+// 直接传递一个 method closure
+assert 'short' == words.find (filter5.&sizeUpTo)
+
+method closure 受限与实例方法, 但是也有一个十分有用的特性: 多态方法.
+跟 interface 与 class 关系很像: 
+声明一个 method closure 就像是声明了一个 interface, 实例中的多个重载方法就像是不同的 class 实现.
+当调用闭包时, 根据传入的参数不同, 闭包选择不同的方法进行引用. 这就实现了方法多态性.
+
+class MultiMethodSample {
+	int mysteryMethod (String value) {
+		return value.length()
+	}
+	int mysteryMethod (List list) {
+		return list.size()
+	}
+	int mysteryMethod (int x, int y) {
+		return x+y
+	}
+}
+
+//Only a single closure is created
+MultiMethodSample instance = new MultiMethodSample()
+Closure multi = instance.&mysteryMethod
+
+// Different implementations are called based on argument types
+assert 10 == multi ('string arg')
+assert 3 == multi (['list', 'of', 'values'])
+assert 14 == multi (6, 8)
+
+}}}

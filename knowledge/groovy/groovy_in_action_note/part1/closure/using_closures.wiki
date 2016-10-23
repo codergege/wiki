@@ -1,0 +1,83 @@
+= using closures =
+{{{
+当把一个闭包作为参数传给 each 方法使用时, each 方法内部发生了什么? each 是怎么调用 closure　的呢?
+接下来先看看调用闭包是多么简单, 然后再深入闭包提供的一些高级方法.
+  }}}
+* 1. calling a closure
+{{{
+假设有一个引用 x 指向了一个 closure, 那么就能够通过 x(), 或 x.call() 去调用闭包:
+
+def adder = { x, y -> return x+y }
+assert adder(4, 3) == 7
+assert adder.call(2, 6) == 8
+
+如果带有参数, 把参数放在()内这就不用多说了. x(param).
+
+如何声明一个像 each 那样的可以方便使用闭包的方法:
+
+// 1. Puts closures last
+def benchmark(int repeat, Closure worker) {
+	def start = System.nanoTime()
+
+	// 2. call closure 并传值给它. 
+	// 这里通过闭包的方式调用闭包, 为了理解方便, 可以想象一个 for 循环去调用 worker(i)
+	repeat.times { worker(it) }
+
+	def stop = System.nanoTime()
+	return stop - start
+}
+
+// 使用我们声明的方法.
+def slow = benchmark(10000) { (int) it / 2 }
+def fast = benchmark(10000) { it.intdiv(2) }
+
+assert fast * 2 < slow
+  }}}
+{{{
+除非闭包定义了默认参数, call closure 时必须传递准确的参数数量.
+
+def adder = { x, y=5 -> return x+y }
+assert adder(4, 3) == 7
+assert adder.call(7) == 12
+
+闭包除了有被调用的能力外, 还有更多其他的能力
+  }}}
+* 2. more closure capabilities 
+{{{
+一般情况下只用到闭包的声明和调用就可以完成大部分工作了, 然而闭包不止能干这么点工作. 了解一下闭包能干些什么也是好的.
+}}}
+* 2.1 reacting on the parameter count or type
+{{{
+像 Map.each 方法展示的那样, 闭包能根据传递的参数数量或类型不同改变自己的行为.
+我们声明自己的接收 closure 的方法时, 可以通过 Closure 的 getMaximumNumberOfParameters, getParameterTypes 方法达到这个目的.
+
+// 这里省略了 return 关键字哦
+def numParams (Closure closure){
+	closure.getMaximumNumberOfParameters()
+}
+assert numParams { one -> } == 1
+assert numParams { one, two -> } == 2
+
+def paramTypes (Closure closure){
+	closure.getParameterTypes()
+}
+
+// 可以看出 getParameterTypes 方法返回一个 type list
+assert paramTypes { String s -> } == [String]
+assert paramTypes { Number n, Date d -> } == [Number, Date]
+}}}
+* 2.2 how to curry favor with a closure
+{{{
+在 groovy 中, 闭包的 curry 方法返回一个克隆的闭包, 并绑定了一个或多个参数值. 参数值从左到右地绑定到 curry 的 arguments.
+
+def mult = { x, y -> return x * y }
+def twoTimes = mult.curry(2)
+assert twoTimes(5) == 10
+
+curry 方法实际上相当于: def twoTimes = { y -> mult 2, y } 显然这样写太麻烦了.
+
+curry 方法真正的强大之处体现在当 the closure’s parameters are themselves closures.
+
+
+}}}
+

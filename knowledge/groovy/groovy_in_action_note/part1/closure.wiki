@@ -5,3 +5,6 @@
 * [[closure/introduction|introductions]] 
 * [[closure/the_case_for_closures|the case for closures]] 
 * [[closure/declaring_closures|declaring closures]] 
+* [[closure/comparing_the available_options|comparing the available options]] 
+* [[closure/using_closures|using closures]] 
+
