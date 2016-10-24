@@ -1,4 +1,6 @@
 {{{
+immense					-- adj 极大地, 巨大的, 浩瀚的, 无边际的
+fine-grained			-- adj 细粒度的
 delegate				-- n 代表, 代表团成员; adj 委派代表, 授权给
 denote					-- vt 代表, 指示, 预示, 意思是
 alleviate				-- vt 减轻, 缓和

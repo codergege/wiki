@@ -1,0 +1,122 @@
+= advanced object oriented features =
+
+* 继承和接口没什么好说的, 跟 java 一样就行了
+* 方法多态性 multimethods 
+{{{
+groovy 比 java 多了方法实参动态类型的特性, 所以也多了 multimethods 特性.
+
+下面的例子调用了两次 oracle 方法, 使用同一种静态类型实参, 但是不同的动态类型:
+
+def oracle(Object o) { return 'object' }
+def oracle(String o) { return 'string' }
+
+// 相同的静态类型 Object, 但是 1 的动态类型是 Integer, 'foo' 的动态类型是 String.
+Object x = 1
+Object y = 'foo'
+
+assert 'object' == oracle(x)
+assert 'string' == oracle(y)
+
+有了这个能力, 你可以避免有选择性重载的时候写一些重复代码了. 
+下面的例子, 只为实参是 Equalizer 类型的, 重载了 Object 类的 equals 方法:
+
+class Equalizer {
+	boolean equals(Equalizer e){
+		return true
+	}
+}
+Object same = new Equalizer()
+Object other = new Object()
+assert new Equalizer().equals( same )
+assert ! new Equalizer().equals( other )
+
+因为 groovy 的 multimethod 特性, 当实参不是 Equalizer 类型时, 会自动去调用父类 Object 的 equals 方法.
+
+同样的功能如果用 java 写, 就十分麻烦:
+
+public class Equalizer {
+	public boolean equals(Object obj) {
+		if (obj == null)
+			return false;
+		if (!(obj instanceof Equalizer)) return false;
+		Equalizer w = (Equalizer) obj; // custom logic here
+		return true;
+	}
+}
+  }}}
+* using traits
+{{{
+groovy traits 支持了能力的组合. 设计用来分享的 capabilities 已经在 traits 中实现了.
+你的类可以去实现这些 traits 以指示你的类提供了这些 capabilities. 你的类从 traits 中"继承"了这些 implementation,
+但是你的类希望重载的话也可以. 这听起来像 java 8 的 default methods.
+是的, 但是 groovy traits 还支持 state
+
+Let’s look at some examples.
+
+Assume we have to model a Book class. Books have an ISBN number. Books also
+have a title just like other types of publications but not all publications have an ISBN .
+So our domain is books that are subclasses of publications:
+
+class Publication {
+	String title
+}
+
+class Book extends Publication {
+	String isbn
+}
+
+But in our application, we also need to save Book instances to a database. Saving has
+nothing to do with books or publications but is an independent capability that applies
+to all persistent entities.
+
+The following listing solves this design task with Groovy traits in a very fine-grained
+manner such that one can mix-and-match the capabilities of having identifiers and versions for persistent entities.
+
+// Defines a trait with state
+trait HasId {
+	long id
+}
+
+trait HasVersion {
+	long version
+}
+
+trait Persistent {
+	boolean save() { println "saving ${this.dump()}" }
+}
+
+trait Entity implements Persistent, HasId, HasVersion {
+	boolean save() {
+		version++
+		Persistent.super.save()
+		Uses specific
+	}
+}
+
+// intrusive way （侵入式) 使用 traits
+class Publication implements Entity {
+	String title
+}
+
+class Book extends Publication {
+	String isbn
+}
+
+Entity gina = new Book(id:1, version:1, title:"gina", isbn:"111111")
+gina.save()
+assert gina.version == 2
+
+还可以在运行时使用非侵入式的方式(nonintrusive)
+
+class Publication {
+	String title
+}
+
+We apply the trait later when needed with the enforced coercion through the as keyword:
+
+Entity gina = new Book(title:"gina", isbn:"111111") as Entity
+gina.id = 1
+gina.version = 1
+
+注意, gina 不再是 Book 类型了, 这是非侵入式的灵活性时, 付出的代价
+  }}}

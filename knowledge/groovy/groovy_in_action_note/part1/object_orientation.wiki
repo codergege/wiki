@@ -8,3 +8,6 @@
   }}}
 * [[object-orientation/defining_classes_and_scripts|defining classes and scripts]] 
 * [[object-orientation/organizing_classes_and_scripts|organizing classes and scripts]] 
+* [[object-orientation/advanced_object_oriented_features|advanced object oriented features]] 
+* [[object-orientation/working_with_beans|working with beans]] 
+* [[object-orientation/using_advanced_syntax_features|using advanced syntax features]] 

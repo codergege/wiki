@@ -1,0 +1,122 @@
+= using advanced syntax features =
+{{{
+GPath, the spread operator, and command chains
+
+  }}}
+* 1. querying objects with GPaths
+{{{
+We’ll explore Groovy by paving a path through the Reflection API . The goal is to get a
+sorted list of all getter methods for the current object. We’ll do so step by step, so
+please open a groovyConsole and follow along. You’ll try to get information about
+your current object, so type
+
+this
+
+and run the script (by pressing Ctrl-Enter). In the output pane, you’ll see some-
+thing like
+
+Script1@e7e8eb
+
+which is the string representation of the current object. To get information about the
+class of this object, you could use this.getClass , but in Groovy you can type
+
+this.class
+
+which displays (after you run the script again)
+
+class Script2
+
+The class object reveals available methods with getMethods , so type
+
+this.class.methods
+
+which prints a long list of method object descriptions. This is too much information
+for the moment. You’re only interested in the method names. Each method object has
+a getName method, so call
+
+this.class.methods.name
+
+and get a list of method names, returned as a list of string objects. You can easily work
+on it, applying what you learned about strings, regular expressions, and lists. Because
+you’re only interested in getter methods and want to have them sorted, type
+
+this.class.methods.name.grep(~/get.*/).sort()
+
+and voilà, you’ll get the result
+
+["getBinding", "getClass", "getMetaClass", "getProperty"]
+
+Such an expression is called a GPath. One special thing about it is that you can call the
+name property on a list of method objects and receive a list of string objects—that is,the names.
+}}}
+*The rule behind this is that*
+{{{
+list.property
+is equal to
+list.collect{ item -> item?.property }
+
+This is an abbreviation of the special case when properties are accessed on lists. The
+general case reads like
+
+list*.member
+
+where *. is the spread-dot operator and member can be a field access, a property access,
+or a method call. The spread-dot operator is needed whenever a method should be
+applied to all elements of the list rather than to the list itself. It is equivalent to
+
+list.collect{ item -> item?.member }
+}}}
+* 2. injecting the spread operator	
+{{{
+*(spread operator) can be seen as the reverse counterpart of the
+subscript operator that creates a list from a sequence of comma-separated objects.
+The spread operator distributes all items of a list to a receiver that can take this
+sequence. Such a receiver can be a method that takes a sequence of arguments or a
+list constructor.
+
+def getList(){
+	return [1,2,3]
+}
+
+def sum(a,b,c){
+	return a + b + c
+}
+
+// 这里的 list 应用了 field accessor 的特性
+assert 6 == sum(*list)
+
+* 也作用于 range
+
+def range = (1..3)
+assert [0,1,2,3] == [0,*range]
+
+应用于 map
+
+def map = [a:1,b:2]
+// 注意 * 后面加了 ":"
+assert [a:1, b:2, c:3] == [c:3, *:map]
+
+
+}}}
+* 3. concise syntax with command chains
+{{{
+Command chains are such a feature that’s based on a very simple idea: one can
+omit dots and parentheses in chain-of-method calls.
+When a chain-of-method call looks like
+
+link(producer).to(consumer)
+
+then Groovy allows you to write this as
+
+link producer to consumer
+
+which reads like an English sentence and is immensely useful in DSLs.
+
+Command chains are also possible with methods that have multiple arguments or
+that take an argument map. The following lines are equivalent:
+
+move(10, forward).painting(color:blue)
+move 10, forward painting color:blue
+
+但是方法必须至少有一个参数, 如果没有参数, 会有语义不明确. 
+}}}

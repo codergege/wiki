@@ -1,0 +1,115 @@
+= working with beans =
+
+* 1. declaring beans
+{{{
+// Java
+public class MyBean implements java.io.Serializable {
+	private String myprop;
+	public String getMyprop(){
+		return myprop;
+	}
+	public void setMyprop(String value){
+		myprop = value;
+	}
+}
+
+The Groovy equivalent is
+
+class MyBean implements Serializable {
+	String myprop
+}
+
+注意, field, getter, setter 三者共用一个声明, 只要改一处地方, 就把三处都改了. 
+所以为了能访问 getter 和 setter, 声明为默认的类型就好了.
+
+隐藏与表面之下, 编译成字节码的时候, groovy 会生成一个 private 的 field 和 public 的 getter, setter. 与 java 代码一样.
+只有代码中没有 getter, setter 的时候才会自动生成. 这个特性使得我们可以自定义 getter, setter.
+
+class MyBean implements Serializable {
+	def untyped
+	String typed
+	def item1, item2
+	def assigned = 'default value'
+}
+
+def bean = new MyBean()
+assert 'default value' == bean.getAssigned()
+bean.setUntyped('some value')
+assert 'some value' == bean.getUntyped()
+bean = new MyBean(typed:'another value')
+assert 'another value' == bean.getTyped()
+
+When the final keyword is used with a property declaration, the property will only be
+readable (no setter method is created and the backing field is final).
+
+}}}
+* 2. working with beans
+* 2.1 accessor method
+{{{
+class MrBean {
+	String firstname, lastname
+	String getName(){
+		return "$firstname $lastname"
+	}
+}
+
+def bean = new MrBean(firstname: 'Rowan')
+bean.lastname = 'Atkinson'
+
+assert 'Rowan Atkinson' == bean.name
+}}}
+* 2.2 field access with .@
+{{{
+how you can provide your own accessor methods and also how
+to bypass the accessor mechanism. You can get directly to the field using the .@
+
+class DoublerBean {
+	public value
+	void setValue(value){
+		this.value = value
+	}
+	def getValue(){
+		value * 2
+	}
+}
+
+def bean = new DoublerBean(value: 100)
+
+assert 200 == bean.value
+// 因为 value 是 public 的
+assert 100 == bean.@value
+}}}
+* 3. fields, accessors, maps, expando
+{{{
+在 groovy 中, 经常能看到像这样的代码 object.name. Here’s what happens when Groovy resolves this reference:
+
+- If object refers to a map, object.name refers to the value corresponding to the
+name key that’s stored in the map. Otherwise, if name is a property of object ,
+the property is referenced (with precedence of accessor methods over fields, as
+you saw in section 7.4.2).
+
+- Every Groovy object has the opportunity to implement its own getProperty
+(name) and setProperty(name, value) methods. When it does, these imple-
+mentations are used to control the property access. Maps, for example, use this
+mechanism to expose keys as properties.
+
+- Field access can be intercepted by providing the object.get(name) method, as
+shown in section 7.1.1. This is a last resort as far as the Groovy runtime is con-
+cerned: it’s used only when there’s no appropriate JavaBeans property available
+and when getProperty isn’t implemented.
+
+An example using Expando
+
+def boxer = new Expando()
+assert null == boxer.takeThis
+boxer.takeThis = 'ouch!'
+assert 'ouch!' == boxer.takeThis
+boxer.fightBack = { times -> delegate.takeThis * times }
+assert 'ouch!ouch!ouch!' == boxer.fightBack(3)
+
+Expando 将一个闭包赋值给属性,以属性访问方式调用闭包的能力, 就像是动态的添加方法到一个对象上.
+
+This comes at a price: Expandos cannot be used as beans in the Java world and don’t support any kind of typing.
+}}}
+
+

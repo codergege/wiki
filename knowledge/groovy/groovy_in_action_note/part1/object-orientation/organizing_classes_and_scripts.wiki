@@ -3,13 +3,109 @@
 * 1. file to class relationship
 {{{
 groovy 中文件与类声明的关系不像 java 那样定死的. 一个 groovy 文件中可以有任意个 public class 声明.
+
 遵循以下规则:
+
 - 如果一个 groovy 文件没有任何 class 声明, 会被当成 script 处理; 即文件内的代码会被包进一个 Script 类型的 class 中.
 注意 Script 是 class 的 class(type). 这会自动生成一个与文件名相同的 class (没有后缀名). 
 文件中的代码会包裹进一个 run 方法中, 还有一个 main 方法会被构造, 用来调用 run 方法.
+
 - 如果一个 groovy 文件中精确的只包含一个 class 声明, 并且 class 名字与文件名一致(不含后缀), 那么跟 java 代码就是一一对应的关系.
+
 - 一个 groovy 文件可能包含多个 class, 这些 class 有任意的可见性, 没有强制规定里面的某个类要跟文件名一致.
 groovyc 编译器会开心的为所有声明的 class 生成对应个 *.class 文件. 如果你希望直接 invoke 你的文件. 
 那么文件中的第一个 class 应当包含一个 main 方法.
-- 
+
+- 一个 groovy 文件可能混合 class 声明和 脚本代码. 这种情况下脚本代码会变成拥有 main 方法的 class. 
+所以不要在混合时声明一个与文件名相同的 class.
+}}}
+* 2. organizing classes in packages
+{{{
+基本跟 java 是一样的.
+
+// 一个 file 
+package cn.codergege.demo.business
+
+class Vendor {
+	String name, product
+	Address address = new Address()
+}
+
+class Address {
+	String street, town, state
+	int zip
+}
+
+// 另一个 file 
+
+import cn.codergege.demo.business.*
+
+def canoo = new Vendor()
+
+canoo.name = 'canoo engineering ag'
+canoo.product = 'ulc'
+
+println canoo.dump()
+  }}}
+* 2.1 类型别名 type aliasing
+{{{
+类型别名的方式也能避免写全类名. 类型别名的特性还解决了:
+命名冲突, 支持本地改变, 修改第三方类库 bug　
+
+考虑下面的类库:
+
+package thirdparty
+
+class MathLib {
+	Integer twice(Integer value) {
+		return value * 3 // intentionally wrong!
+	}
+
+	Integer half(Integer value) {
+		return value / 2
+	}
+}
+
+Suppose now that we have existing code that uses that library:
+
+assert 10 == new MathLib().twice(5)
+
+这明显就错了. 我们可以用类型别名修复第三方类库的 bug, 而不去改变原始代码!
+
+import thirdparty.MathLib as OrigMathLib
+
+class MathLib extends OrigMathLib {
+	Integer twice(Integer value) {
+		return value * 2
+	}
+}
+
+// nothing changes below here
+def mathlib = new MathLib()
+
+assert 10 == mathlib.twice(5)
+assert 2 == mathlib.half(5)
+
+用类型别名解决名称冲突:
+
+Now, suppose that we have the following additional math library that we need to use:
+
+package thirdparty2
+class MathLib {
+	Integer increment(Integer value) {
+		return value + 1
+	}
+}
+
+分别命名为 TwiceHalfMathLib, IncMathLib:
+
+import thirdparty.MathLib as TwiceHalfMathLib
+import thirdparty2.MathLib as IncMathLib
+
+def math1 = new TwiceHalfMathLib()
+def math2 = new IncMathLib()
+
+assert 3 == math1.half(math2.increment(5))
+
+类型别名十分有用, 比如可以给 java.util.Date 和 java.sql.Date 分别起个别名.
 }}}
