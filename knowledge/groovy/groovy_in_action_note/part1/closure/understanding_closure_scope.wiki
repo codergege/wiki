@@ -1,2 +1,98 @@
 = understanding closure scope =
+{{{
+从闭包中, 能访问哪些数据和方法? 使用 this 引用会有什么不同? 
+如何用你现在掌握的知识去测试一下, 一个经典的, 用来测试任何语言表达式的例子.
 
+在研究闭包 scope 的时候, 你会了解:
+- 哪些变量是可访问的.
+- 变量是何时以及如何绑定一个值的.
+- 如何去掌控 scope.
+
+在开始的时候, 先看这样一个例子
+
+def x = 0
+10.times {
+x++
+}
+assert x == 10
+
+这证明了传给 times 方法的闭包可以在声明时访问(读, 写)本地变量 x. 
+这又引起了另外一个思考: 闭包肯定也是要能在运行时访问 x 的; 闭包是传给 times 方法的, times 又回调闭包.
+但是 times 是没有机会知道 x 的, 所以 times 不能传 x 给闭包.
+唯一的途径是闭包通过什么手段记住了它出生时的上下文(birth context), 并在闭包生命周期中都带着它.
+这个被闭包记住的出生上下文必须是一个引用, 而不是一份拷贝(不然闭包无法改变原始值).
+
+上面说的太啰嗦, 一句话解释就是, 闭包对象在 runtime 生成时, 保存了本地变量的引用.
+  }}}
+
+* 1. simple variable scope
+{{{
+上面解释的很详细了.
+  }}}
+* 2. nspecting closure scope
+{{{
+closure 处理其他 scope 元素与本地变量是一样的. the value of this, fields, methods and parameters.
+大部分时候这么理解都是对的, 但是 this 引用是一个特殊的情况. 
+java 和 groovy 语言中, 无限制的 reference 等价与 this.reference. 闭包中的 this 自然就是闭包自己.
+那么要引用 scope 元素时必须加上 qualified, 这样就太烦了.
+
+groovy 使用了另外一种策略, groovy 允许程序员控制引用如何被处理. 当我们不能直接把 this 设置为其他值时, 
+我们可以设置一个代表(delegate). 当处理 unqualified reference 时, delegate 就被使用了. delegate 默认是 owner.
+
+class Mother {
+	def prop = 'prop'
+	def method(){ 'method' }
+	Closure birth (param) {
+		def local = 'local'
+		def closure = {
+			[ this, prop, method(), local, param ]
+		}
+		return closure
+	}
+}
+
+Mother julia = new Mother()
+def closure = julia.birth('param')
+
+def context = closure.call()
+
+assert context[0] == julia
+assert context[1, 2] == ['prop', 'method']
+assert context[3, 4] == ['local', 'param' ]
+assert closure.thisObject == julia
+assert closure.owner == julia
+assert closure.delegate == julia
+assert closure.resolveStrategy == Closure.OWNER_FIRST
+
+我们可以设置 delegate 为另一个对象, 通过使用 gdk 的 with 方法.
+
+def map = [:]
+map.with { // delegate is now map
+	a = 1 // same as map.a = 1
+	b = 2 // same as map.b = 2
+}
+assert map == [a:1, b:2]
+
+local closure scope, delegate, owner 将引起引用冲突, 顺序等问题.
+这个可以通过设置 Closure 的 resolveStrategy 方法为 OWNER_ONLY , OWNER_FIRST
+(default), DELEGATE_ONLY , DELEGATE_FIRST , or SELF_ONLY, 来解决.
+  }}}
+* 3. scoping at work: the classic accumulator test
+{{{
+groovy 解决 accumulator 问题的方式. 
+accumulator 问题描述: 有一个初始值, 之后传给累加器的参数会累加.
+
+groovy 不像其他脚本语言那样有 function, 但是 groovy 有 method, 有 closure.
+closure 中存放着 owner 变量的引用, 所以可以存储值.
+可以用一个 method 返回一个 closure 并传入初始值. 这个 closure 就是 accumelator.
+
+// 定义一个 method 返回 accumulator, 初始值 n.
+def foo(n) {
+	return {n += it}
+}
+// 定义初始值 1 的 accumulator.
+def accumulator = foo(1)
+// 累加操作
+assert accumulator(2) == 3
+assert accumulator(1) == 4
+  }}}

@@ -1,0 +1,15 @@
+= organizing classes and scripts =
+
+* 1. file to class relationship
+{{{
+groovy 中文件与类声明的关系不像 java 那样定死的. 一个 groovy 文件中可以有任意个 public class 声明.
+遵循以下规则:
+- 如果一个 groovy 文件没有任何 class 声明, 会被当成 script 处理; 即文件内的代码会被包进一个 Script 类型的 class 中.
+注意 Script 是 class 的 class(type). 这会自动生成一个与文件名相同的 class (没有后缀名). 
+文件中的代码会包裹进一个 run 方法中, 还有一个 main 方法会被构造, 用来调用 run 方法.
+- 如果一个 groovy 文件中精确的只包含一个 class 声明, 并且 class 名字与文件名一致(不含后缀), 那么跟 java 代码就是一一对应的关系.
+- 一个 groovy 文件可能包含多个 class, 这些 class 有任意的可见性, 没有强制规定里面的某个类要跟文件名一致.
+groovyc 编译器会开心的为所有声明的 class 生成对应个 *.class 文件. 如果你希望直接 invoke 你的文件. 
+那么文件中的第一个 class 应当包含一个 main 方法.
+- 
+}}}

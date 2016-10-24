@@ -1,0 +1,14 @@
+= groovy truth =
+
+* evaluating boolean tests
+{{{
+规则列表:
+runtime type			evaluation criterion required for truth
+Boolean					对应的 Boolean 值是 true
+Matcher					Matcher 有一个匹配
+Collection				Collection 非空
+Map						Map 非空
+String, GString			内容不空
+Number, Character		值不是 0
+除了上面这些			对象的引用是 non-null 的
+  }}}

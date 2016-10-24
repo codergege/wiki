@@ -8,4 +8,23 @@
 * [[closure/comparing_the available_options|comparing the available options]] 
 * [[closure/using_closures|using closures]] 
 * [[closure/understanding_closure_scope|understanding closure scope]] 
+* returning from closures
+{{{
+有两种返回方式:
+- 闭包的最后一个表达式已经是可计算的, 那么计算结果被返回. 这种称为 end return. end return 的 return 关键字是可选的.
+- 提早 return. (prematurely)
+
+// end return
+[1, 2, 3].collect{ it * 2 }
+[1, 2, 3].collect{ return it * 2 }
+
+// prematurely return 
+[1, 2, 3].collect{
+	// 如果是偶数, 返回双倍.
+	if (it%2 == 0) return it * 2
+	return it
+}
+  }}}
+* support for design patterns
+
 

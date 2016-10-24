@@ -1,0 +1,100 @@
+= defining classes and scripts =
+
+* 1. defining fields and local variables
+{{{
+groovy 增加了 . [] 操作符的方式访问 field.
+}}}
+* 2. methods and parameters
+{{{
+方法的声明与你看到的变量的声明有相同的概念: 通常能使用 java 修饰符; 返回类型的声明是可选的;
+如果没有修饰符或者返回类型,那么使用 def 关键字来填空白,当使用 def 关键字的时候,
+方法的返回类型被认为是没有类型(尽管没有返回类型, 这时与 void 方法等价), 在这种情况下, 
+groovy 将方法的返回类型定义为 java.lang.Object, 缺省的方法访问范围为 public。
+
+参数的高级用法, 默认参数, list 参数, 可变数量的数组参数, map 参数:
+
+class Summer {
+	def sumWithDefaults(a, b, c=0){
+	return a + b + c
+}
+
+// inject 用法再提一遍: 给闭包注入额外的参数, 从左往右
+def sumWithList(List args){
+	return args.inject(0){sum,i -> sum += i}
+}
+
+// Optional arguments as array
+def sumWithOptionals(a, b, Object[] optionals){
+	return a + b + sumWithList(optionals.toList())
+}
+
+def sumNamed(Map args){
+	['a','b','c'].each{args.get(it,0)}
+	return args.a + args.b + args.c
+}
+
+还有其他的, 像 method(args...), method(Type[] args)
+}}}
+* 3. safe dereferencing with the ?. operator
+{{{
+当一个引用不指向任何对象时, 它的值是 null. 当用 null 的引用去调用方法或访问属性的时候, 
+会抛一个 NullPointerException.  这时候使用 ?. 可以避免抛异常.
+
+def map = [a:[b:[c:1]]]
+
+assert map.a.b.c == 1
+
+if (map && map.a && map.a.x){
+	assert map.a.x.c == null
+}
+
+try {
+	assert map.a.x.c == null
+} catch (NullPointerException ignore){
+}
+
+assert map?.a?.x?.c == null
+  }}}
+* 4. construction
+{{{
+We’ll first look at constructors with positional parameters, and then we’ll examine named parameters.
+  }}}
+* 4.1 positional parameters
+{{{
+class VendorWithCtor {
+	String name, product
+	VendorWithCtor(name, product) {
+		this.name = name
+		this.product = product
+	}
+}
+
+// normal constructor use
+def first = new VendorWithCtor('Canoo','ULC')
+// coercion with as 强迫 with as
+def second = ['Canoo','ULC'] as VendorWithCtor
+// coercion in assignment
+VendorWithCtor third = ['Canoo','ULC']
+
+当 groovy 看到需要强迫(coerce)一个 list 为其他类型的时候, groovy 会尝试调用类型的构造方法, 
+并将 list 中的元素作为实参(augument)传入.
+  }}}
+* 4.2 named parameters
+{{{
+named parameters 在构造函数中十分好使. 一个常用的地方是不可变类(immutable class)的构造函数中, 并且一些参数是可选的.
+
+
+class Vendor {
+	String name, product
+}
+
+// new Vendor()
+// new Vendor(name: 'Canoo')
+// new Vendor(product: 'ULC')
+// new Vendor(name: 'Canoo', product: 'ULC')
+
+def vendor = new Vendor(name: 'Canoo')
+
+assert 'Canoo' == vendor.name
+
+  }}}

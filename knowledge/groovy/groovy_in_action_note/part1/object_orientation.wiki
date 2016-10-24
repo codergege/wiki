@@ -1,0 +1,10 @@
+= 面向对象 groovy style =
+{{{
+这节包括:
+- 定义对象和脚本
+- 面向对象的特性: 继承, 接口, 多态 和 traits
+- working with groovy beans
+- 高级语法特征: GPath, spread operators and command chains
+  }}}
+* [[object-orientation/defining_classes_and_scripts|defining classes and scripts]] 
+* [[object-orientation/organizing_classes_and_scripts|organizing classes and scripts]] 

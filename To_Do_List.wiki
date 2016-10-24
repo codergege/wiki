@@ -19,6 +19,7 @@
 	
 * [ ] groovy
 	* [ ] book: groovy in action 2edition 
+		* [ ] part1: 闭包: support for design patterns
 	* [ ] getting started 
 	* [ ] tools
 	* [ ] language specification

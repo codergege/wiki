@@ -1,0 +1,20 @@
+= conditional execution structures =
+
+* the humble if statement
+{{{
+没什么好说的吧？
+  }}}
+* the conditional ?: operator
+{{{
+其他基本没什么好说的, 就下面有个简写的情况:
+
+def result = argument ? argument : standard
+
+可以简写为:
+
+def result = argument ?: standard
+  }}}
+* switch 和 in 操作符
+{{{
+也没什么好说的, 就是 switch 支持 classification. 
+  }}}
