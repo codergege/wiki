@@ -1,0 +1,26 @@
+= introduction =
+{{{
+一个对象不可能被设计的十分完美, 我们经常想添加一些特性, 能力进去.
+动态编程允许迟些时候添加这些, 而不会去改变源码.
+源码甚至可以是一个 java 类, 只要这个类是被 groovy 调用的就行.
+
+改变像 Integer 这样普遍使用的类, 最好引用在你需要的 scope 中.
+所以 dynamic programming 允许临时使用这样的特性: 
+
+- 运行时增加和移除特性
+- 限制它的使用, 在一个给定的代码片段, 一个类, 或一个单一的实例
+- 甚至可以配置它只作用于当前的执行线程
+
+Dynamic programming has a wide range of applicability, including:
+
+- Designing DSLs (see chapter 18)
+- Implementing builders (see chapter 11)
+- Advanced logging, tracing, debugging, and profiling
+- Automated testing even where testing seems impossible (see chapter 17)
+- Putting lipstick on existing API s—for example, by eliminating the “incomplete
+library class” smell 1 —to make them more complete, coherent, and accessible
+- Organizing the codebase so that features are kept in one place even if their
+behavior involves the collaboration of multiple classes; for example, you need
+abstractions for date, time, and duration working together to provide the date-
+calculation feature.
+  }}}

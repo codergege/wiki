@@ -1,5 +1,6 @@
 {{{
-immense					-- adj 极大地, 巨大的, 浩瀚的, 无边际的
+relay					-- vt 转播, 传达, 使接替; n 继电器, 传递, 替班
+debatable				-- adj 可争议的, 成问题的, 未定的
 fine-grained			-- adj 细粒度的
 delegate				-- n 代表, 代表团成员; adj 委派代表, 授权给
 denote					-- vt 代表, 指示, 预示, 意思是
@@ -53,9 +54,11 @@ explicitly
 respectively
 proportional
 furiously
+ubiquitous				-- adj 无所不在的, 普遍存在的
+immense					-- adj 极大地, 巨大的, 浩瀚的, 无边际的
 pervasive				-- adj 普遍的, 渗透的, 弥漫的; adv 无处不在地, 遍布地; n 无处不在, 遍布
 mundane
-trivial 
+trivial					-- adj 琐碎的, 无价值的, 平常的, 平凡的, 不重要的
 Abbreviations
 essence 
 painstakingly			--　adv 刻意, 刻苦地, 煞费苦心

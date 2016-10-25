@@ -1,0 +1,100 @@
+= modifying behavior through the metaclass =
+{{{
+With methodMissing and propertyMissing you’ve seen examples of hook methods 
+that the MOP invokes when it cannot find the requested method or property. In
+this section, we’ll explore how Groovy tries to locate those and how you can use the
+lookup mechanism for the purposes of customizing the object’s behavior.
+  }}}
+* 1. metaclass knows it all
+{{{
+For every class A in the class loader, Groovy maintains a metaclass—an object of type
+MetaClass . This metaclass maintains the collection of all methods and properties of A ,
+starting with the bytecode information of A and adding additional methods that
+Groovy knows about per default ( DefaultGroovyMethods ).
+
+一般来说, 所有 A 的实例都共享同一个 metaclass 对象, 但是 groovy 也支持不同的 A 实例拥有各自的 metaclass.
+We’ll revisit this situation later.
+
+下面的例子 inspects the capabilities of MetaClass by asking String for its meta-
+class and calling various methods on it.
+We inspect the availability of methods with respondsTo , list all properties , 
+list all methods from the bytecode, list all metaMethods that Groovy added dynamically, 
+and call invokeMethod , invokeStaticMethod, and invokeConstructor to show dynamic invocation.
+
+MetaClass mc = String.metaClass
+final Object[] NO_ARGS = []
+assert 1 == mc.respondsTo("toString", NO_ARGS).size()
+assert 3 == mc.properties.size()
+assert 74 == mc.methods.size()
+assert 176 == mc.metaMethods.size()
+assert "" == mc.invokeMethod("","toString", NO_ARGS)
+assert null == mc.invokeStaticMethod(String, "println", NO_ARGS)
+assert "" == mc.invokeConstructor(NO_ARGS)
+}}}
+* 2. how to find the metaclass and invoke methods
+{{{
+You’ve seen that all GroovyObjects have a metaClass property ( setMetaClass and
+getMetaClass methods). That makes it easy to find the metaclass for them. You simply
+ask the object with obj.metaClass.
+
+If you don’t provide a custom implementation of the metaClass property accessor
+methods, the default implementation looks up the metaclass in the so-called Meta-
+ClassRegistry. The registry maintains a map of classes and their metaclasses.
+
+Objects that don’t inherit from GroovyObject aren’t asked for the metaClass
+property. Their metaclass is retrieved from the MetaClassRegistry.
+
+下面的伪代码揭露了如何寻找 metaclass 和 invoke methods 的逻辑核心:
+
+// MOP pseudo code
+def mopInvoke(Object obj, String method, Object args) {
+	if (obj instanceof GroovyObject) {
+		return groovyObjectInvoke(obj, method, args)
+	}
+	// Important methods from the metaclass
+	registry.getMetaClass(obj.class).invokeMethod(obj, method, args)
+}
+
+def groovyObjectInvoke(Object obj, String method,
+	if (obj instanceof GroovyInterceptable) {
+		// hook methods
+		return obj.metaClass.invokeMethod(method,
+	}
+	if (! obj.metaClass.respondsTo(method, args))
+		// hook methods
+		return obj.metaClass.invokeMethod(method,
+	}
+	// Important methods from the metaclass
+	obj.metaClass.invokeMethod(obj, method, args)
+}
+}}}
+You may ask why methodMissing doesn’t appear in the preceding code. This case is
+handled the *default metaclass*:
+{{{
+// Default meta class pseudo code
+def invokeMethod(Object obj, String method, Object args) {
+	if (obj.metaClass.respondsTo(method, args)) {
+		return methodCall(obj, method, args)
+	}
+
+	if (methodMissingAvailable(obj)) {
+		return obj.metaClass.methodMissing(method, args)
+	}
+	throw new MissingMethodException()
+}
+}}}
+The mechanics of the MOP may appear complex but for usual cases you can assume
+that all method calls go through the metaclass and *the default metaclass is in place*. This
+raises the question what other metaclasses are available and why you’d want to use them.
+* 3. setting other metaclass
+{{{
+Groovy comes with a number of metaclasses:
+
+- The default metaclass MetaClassImpl , which is used in the vast majority of cases
+- The ExpandoMetaClass , which can expand the state and behavior
+- A ProxyMetaClass , which can decorate a metaclass with interception capabilities
+- Additional metaclasses that are used internally and for testing purposes
+
+}}}
+
+

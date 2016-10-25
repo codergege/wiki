@@ -39,3 +39,4 @@
 == Database ==
 * [[knowledge/database/mysql|mysql]]					-- mysql
 * [[knowledge/database/oracle|oracle]]					-- oracle
+= [[名句]] =

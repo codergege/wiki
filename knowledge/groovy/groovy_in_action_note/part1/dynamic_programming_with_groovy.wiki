@@ -1,0 +1,11 @@
+= dynamic programming with groovy =
+{{{
+- how groovy supports dynamic programming
+- an explanation of meta object protocol(mop)
+- how to utilize the mop for your own purposes
+  }}}
+* [[dynamic-programming-with-groovy/introduction|introduction]]
+* [[dynamic-programming-with-groovy/what_is_dynamic_programming|what is dynamic programming]]
+* [[dynamic-programming-with-groovy/meta_object_protocol|meta object protocol]]
+* [[dynamic-programming-with-groovy/customizing_the_mop_with_hook_methods|customizing the mop with hook methods]]
+* [[dynamic-programming-with-groovy/modifying_behavior_through_the_metaclass|modifying behavior through the metaclass]]

@@ -1,0 +1,22 @@
+
+= meta object protocol =
+{{{
+这手段实际上是非直接的. 当 groovy 调用一个方法时, 它并不直接调用那个方法, 
+而是 asks 一个媒介层去代那个方法做这件事. 这媒介层提供了 hooks 允许你去影响它的内部工作.
+}}}
+*A protocol is a collection of rules and formats.*
+{{{
+The MOP is the collection of rules of
+一个方法调用的请求是如何被 groovy runtime system 处理的, 
+以及如何控制媒介层.
+
+懂得 "groovy calls a method" 的含义是理解这个机制的重点. 下面演示 groovy calls a method:
+
+println 'Hello' // Groovy
+
+Then the resulting bytecode that Groovy produces is roughly equivalent to the follow-
+ing Java code:
+
+InvokerHelper.invokeMethod(this, "println", {"Hello"}); // Java
+
+}}}

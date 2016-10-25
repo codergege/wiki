@@ -1,0 +1,151 @@
+= customizing the mop with hook methods =
+{{{
+mop 的核心职责是: 寻找和选择正确的目标方法; 当请求方法没找到的情况做出处理.
+  }}}
+* 1. customizing methodMissing
+{{{
+每当在目标对象中找不到目标方法, groovy 回去寻找 the hook method:
+
+Object methodMissing(String name, Object arguments)
+
+并且调用它, 参数是请求的方法名和实参.
+
+The next listing uses this hook in a Pretender class to merely return a string that
+shows what had been requested. The Pretender only pretends 4 to have the method
+hello(String) , but in the bytecode of the class there’s no such method.
+
+class Pretender {
+	def methodMissing(String name, Object args) {
+		"called $name with $args"
+	}
+}
+
+def bounce = new Pretender()
+
+assert bounce.hello('world') == 'called hello with [world]'
+  }}}
+* 2. customizing propertyMissing
+{{{
+propertyMissing is for property access.
+
+You implement
+
+Object propertyMissing(String name)
+
+to catch all access to nonexisting properties.
+
+class PropPretender {
+	def propertyMissing(String name) {
+		"accessed $name"
+	}
+}
+
+def bounce = new PropPretender()
+
+assert bounce.hello == 'accessed hello'
+
+we use this hook as a method of the Script class to implement an easy way to calculate with binary numbers. 
+This actually feels like a DSL .
+
+def propertyMissing(String name) {
+	int result = 0
+	name.each {
+		result <<= 1
+		if (it == 'I') result++
+	}
+	return result
+}
+
+assert IIOI + IOI == IOOIO
+
+  }}}
+
+* 3. using closure for dynamic hooks
+{{{
+class DynamicPretender {
+	// Closure property with default logic
+	Closure whatToDo = { name -> "accessed $name"}
+	def propertyMissing(String name) {
+		whatToDo(name)// Delegates to the closure, 委托闭包去做
+	}
+}
+
+def one = new DynamicPretender()
+assert one.hello == 'accessed hello'
+one.whatToDo = { name -> name.size() } // Changes hook behavior at runtime
+assert one.hello == 5
+
+  }}}
+* 4. customizing GroovyObject methods
+{{{
+All classes that are compiled by Groovy implement the GroovyObject interface, which
+looks like this:
+
+public interface GroovyObject {
+	Object invokeMethod(String methodName, Object args);
+	Object getProperty(String propertyName);
+	void setProperty(String propertyName, Object newValue);
+	MetaClass getMetaClass();
+	void setMetaClass(MetaClass metaClass);
+}
+  }}}
+{{{
+Again, you’re free to implement any such methods in your Groovy class to your liking.
+If you don’t, then the Groovy compiler will insert a default implementation for you.
+This default implementation is the same as if you’d inherit from GroovyObjectSupport ,
+which basically relays all calls to the metaclass. It roughly looks like this (excerpt):
+
+public abstract class GroovyObjectSupport implements GroovyObject {
+	public Object invokeMethod(String name, Object args) {
+		return getMetaClass().invokeMethod(this, name, args);
+	}
+	public Object getProperty(String property) {
+		return getMetaClass().getProperty(this, property);
+	}
+	public void setProperty(String property, Object newValue) {
+		getMetaClass().setProperty(this, property, newValue);
+	}
+	// more here...
+}
+
+}}}
+{{{
+As soon as a class implements GroovyObject , the following rules apply:
+
+- Every access to a property calls the getProperty() method. 6
+- Every modification of a property calls the setProperty() method.
+- Every call to an unknown method calls invokeMethod() . If the method is known,
+invokeMethod() is only called if the class implements GroovyObject and the marker interface GroovyInterceptable .
+
+}}}
+{{{
+In Groovy, parentheses for method calls are optional for top-level statements, but only if
+there’s at least one argument. This is needed to distinguish method calls from property access. 
+We cannot call toString() without the parentheses because toString
+would refer to the property of the name toString . 
+
+The next listing allows us to go around this limitation. We implement getProperty() such that if the property exists,
+we return its value; if not, we assume that the parameterless method will be executed.
+Such a feature can be interesting when designing DSLs.
+
+class NoParens {
+	def getProperty(String propertyName) {
+		if (metaClass.hasProperty(this, propertyName)) {
+			return metaClass.getProperty(this, propertyName)
+		}
+		invokeMethod propertyName, null // dynamic invocation
+	}
+}
+
+class PropUser extends NoParens {
+	boolean existingProperty = true
+}
+
+def user = new PropUser()
+
+assert user.existingProperty
+assert user.toString() == user.toString
+
+注意: Once you’ve implemented getProperty() , every property will be
+found and thus propertyMissing() will no longer be called.
+}}}

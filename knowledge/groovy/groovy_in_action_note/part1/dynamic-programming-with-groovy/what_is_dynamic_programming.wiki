@@ -1,0 +1,24 @@
+= what is dynamic programming =
+{{{
+In classic object-oriented systems, every class has a well-known set of states, captured in
+the fields of that class, and well-known behavior, defined by its methods. Neither the
+set of states nor the behavior ever changes after compilation, and it’s identical for all
+instances of a class.
+
+Dynamic programming breaks this limitation by allowing the introduction of a
+new state, or even more importantly, allowing the addition of a new behavior or modi-
+fication of an existing one.
+}}}
+*What is “meta”?*
+{{{
+Meta means applying a concept onto itself—for example, metainformation is infor-
+mation about information. Likewise, because programming is “writing code,” metapro-
+gramming means writing code that writes code. This includes source-code generation
+(for example, producing a long string that’s then evaluated as a script), bytecode gen-
+eration as explained in the next chapter, and pretending or synthesizing methods.
+The latter is part of dynamic programming and we’ll encounter it later in this chapter.
+
+The use of “meta” as a qualifier in the Groovy runtime system is in many places debat-
+able. Anyway, it isn’t only there for historical reasons; it also suggests that we’re work-
+ing on an elevated abstraction level whenever this word is used.
+}}}
