@@ -1,0 +1,4 @@
+= dtrx =
+sudo apt-get install dtrx
+
+使用: dtrx xxx.tar.xx

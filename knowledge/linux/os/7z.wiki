@@ -1,0 +1,19 @@
+= 7z = 
+
+sudo apt-get install p7zip-full p7zip-rar
+
+{{{
+
+7za x filename.7z -r -o./
+
+参数含义：
+
+x  代表解压缩文件，并且是按原始目录树解压（还有个参数 e 也是解压缩文件，但其会将所有文件都解压到根下，而不是自己原有的文件夹下）
+
+phpMyAdmin-3.3.8.1-all-languages.7z  是压缩文件，这里我用phpadmin做测试。这里默认使用当前目录下的phpMyAdmin-3.3.8.1-all-languages.7z
+
+-r 表示递归解压缩所有的子文件夹
+
+-o 是指定解压到的目录，-o后是没有空格的，直接接目录。这一点需要注意。
+
+  }}}
