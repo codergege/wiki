@@ -20,6 +20,9 @@
 * [ ] groovy
 	* [ ] book: groovy in action 2edition 
 		* [ ] part1: 闭包: support for design patterns
+		* [ ] part1: dynamic programming with groovy: 8.4: 8.4.4 ...
+		* [ ] part1: 9: 9, 10
+		* [ ] part1: 10
 	* [ ] getting started 
 	* [ ] tools
 	* [ ] language specification

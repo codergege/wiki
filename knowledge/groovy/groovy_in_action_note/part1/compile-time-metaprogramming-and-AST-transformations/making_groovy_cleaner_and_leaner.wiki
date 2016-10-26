@@ -1,0 +1,283 @@
+= making groovy cleaner and leaner =
+{{{
+For the purposes of this section, we’ve divided the existing AST transformations
+into six categories:
+
+- Code-generation transformations
+- Class design and design pattern annotations
+- Logging improvements
+- Declarative concurrency
+- Easier cloning and externalizing
+- Scripting support
+}}}
+* 1. code-generation transformations
+{{{
+AST transformations 常常专注于自动生成重复的常见方法, 像 equals(Object), hashCode() 还有构造方法.
+groovy 内置的这种类型的注解还包括 @ToString, @EqualsAndHashCode, @TupleConstructor, @Lazy, 
+@IndexedProperty, @InheritConstructors, @Builder, and @Sortable.
+}}}
+* 1.1 @groovy.transform.ToString
+{{{
+Annotating a class with the @ToString annotation gives that class a standard toString()
+method. @ToString prints out the class name and, by default, all of the field values, as
+you can see in the simple example in the following listing.
+
+import groovy.transform.ToString
+
+@ToString
+class Detective {
+	String firstName, lastName
+}
+
+def sherlock = new Detective(firstName: 'Sherlock', lastName: 'Holmes')
+assert sherlock.toString() == 'Detective(Sherlock, Holmes)'
+
+You can also control the information that toString() displays with various annotation
+parameters. An example including property names and eliding null values is shown
+in the following listing.
+
+import groovy.transform.ToString
+
+@ToString(includeNames = true, ignoreNulls = true)
+class Sleuth {
+	String firstName, lastName
+}
+
+def nancy = new Sleuth(firstName: 'Nancy', lastName: 'Drew')
+assert nancy.toString() == 'Sleuth(firstName:Nancy, lastName:Drew)'
+nancy.lastName = null
+assert nancy.toString() == 'Sleuth(firstName:Nancy)'
+}}}
+* 1.2 @groovy.transform.EqualsAndHashCode
+{{{
+Implementing the equals() and hashCode() methods correctly is repetitive and
+error-prone. Luckily the @EqualsAndHashCode annotation does it for you. The gener-
+ated equals() method obeys the contract of Object.equals() , and the generated
+hashCode() produces an appropriate hash value using a standard algorithm factoring
+in the constituent fields.
+
+import groovy.transform.EqualsAndHashCode
+
+@EqualsAndHashCode
+class Actor {
+	String firstName, lastName
+}
+
+def magneto = new Actor(firstName:'Ian', lastName: 'McKellen')
+def gandalf = new Actor(firstName:'Ian', lastName: 'McKellen')
+
+assert magneto == gandalf
+
+You can customize the equals() and hashCode() methods created using annotation
+parameters. With these, you can easily exclude certain properties from the calcula-
+tion, include fields in the calculation, or cache the calculated values (appropriate if
+you have an immutable class).
+
+
+}}}
+* 1.3 @groovy.transform.TupleConstructor
+{{{
+Groovy has a flexible syntax for creating objects, such as named arguments and with
+blocks. But sometimes you want the object constructor to take all of the fields explic-
+itly, especially when you’re creating the Groovy object from Java code. The @Tuple-
+Constructor annotation adds this constructor onto the object, as you can see in the
+following listing.
+
+import groovy.transform.TupleConstructor
+
+@TupleConstructor
+class Athlete {
+	String firstName, lastName
+}
+
+def a1 = new Athlete('Michael', 'Jordan')
+def a2 = new Athlete('Michael')
+assert a1.firstName == a2.firstName
+
+默认的, 生成的构造方法参数顺序与声明的字段顺序是一致的.
+另外, 每个参数都有个对应 java 类型的默认值. 
+
+The @ToString , @EqualsAndHashCode , and @TupleConstructor annotations are so
+useful that in many cases you may want to use all three annotations together. In sec-
+tion 9.2.2 we’ll review @Canonical and @Immutable , which allow you to do just that.
+But first, let’s look at other very handy boilerplate-saving annotations.
+}}}
+* 1.4 @groovy.transform.Lazy
+{{{
+Lazy instantiation is a common idiom in Java. If a field is expensive to create, such as
+a database connection, then the field is initialized to null , and the actual connec-
+tion is created only the first time that field is used. Typical in this idiom is a null
+check and instantiation within a getter method. But not only is this boilerplate code,
+there are numerous tricky scenarios, such as correctly handling creation in a multi-
+threaded environment, which are error-prone.
+
+@Lazy 这个字段注解准确的延迟字段实例化, 直到字段被第一次使用, 并且准确的处理像 null check 这样的 tricky special cases
+}}}
+* 1.5 @groovy.transform.IndexedProperty
+{{{
+groovy 中不需要, 因为已经有简单的访问方式了, 只有需要将 class 给 java 使用时, 才去用这个注解.
+很少用到.
+}}}
+* 1.6 @groovy.transform.InheritConstructor
+{{{
+The @InheritConstructors annotation removes the boilerplate of writing match-
+ing constructors for a superclass.
+
+还有一些注意事项, 以后用到再说
+}}}
+* 1.7 @groovy.transform.Softable
+* 1.8 @groovy.transform.Builder
+* 2. class design and design pattern annotations
+{{{
+Some transformations focus on implementing common design patterns or best-
+practice idioms. The goal is to make the right design decisions also the easiest ones to
+implement. The annotations in this category are @Canonical , @Immutable , @Delegate ,
+@Singleton , @Memoized , and @TailRecursive , and their goal is to bring clarity of
+design intent and correctness of implementation when using these design patterns.
+}}}
+* 2.1 @groovy.transform.Canonical
+{{{
+相当于同时使用了 @ToString, @EqualsAndHashCode, and @TupleConstructor.
+
+The @Canonical annotation takes optional parameters to include or exclude proper-
+ties from the constructor and method implementations that it creates. If you wish to
+have more fine-grained control over the transformation’s behavior, you can override
+its defaults by using one of the constituent annotations in conjunction with @Canonical .
+If you want to use @Canonical but customize the @ToString behavior, then annotate
+the class with both @Canonical and @ToString . The @ToString definition and param-
+eters takes precedence over @Canonical .
+}}}
+* 2.2 @groovy.transform.Immutable
+* 2.3 *@groovy.lang.Delegate*
+{{{
+In Java, one of easiest ways to reuse existing code is with a parent class, but just because
+it’s easy doesn’t mean that it’s the best approach. If you genuinely have a pure is-a rela-
+tionship between two classes, then inheritance might be appropriate, but in many cases
+when constructing the new class you want to make modifications to the behavior of
+some of the methods. In those cases, consider delegation. A delegate is a has-a relation-
+ship between two classes. Typically, one class will contain a reference to another and
+then also share some of the API with that class.
+
+A naive attempt might assume that a NoisySet is-a HashSet and might look something like this:
+
+class NoisySet extends HashSet {
+	@Override
+	boolean add(item) {
+		println "adding $item"
+		super.add(item)
+	}
+
+	@Override
+	boolean addAll(Collection items) {
+		items.each { println "adding $it" }
+		super.addAll(items)
+	}
+}
+
+This approach is broken. Any items added using addAll will be printed out twice
+because under the covers addAll calls add within HashSet . For this simple case, we
+could remove the println statements in addAll but it would be a brittle solution—if
+the HashSet implementation changed in the future, we might no longer be printing
+out all the items! The solution is to use delegation. It’s a well-known and relatively
+straightforward design pattern but involves quite a bit of boilerplate code. For our
+example, it would look something like this:
+
+class NoisySet implements Set {
+	private Set delegate = new HashSet()
+	@Override
+	boolean add(item) {
+		println "adding $item"
+		delegate.add(item)
+	}
+
+	@Override
+	boolean addAll(Collection items) {
+		items.each { println "adding $it" }
+		delegate.addAll(items)
+	}
+	@Override
+	boolean isEmpty() {
+		return delegate.isEmpty()
+	}
+	@Override
+	boolean contains(Object o) {
+		return delegate.contains(o)
+	}
+	// ... ditto for size, iterator, toArray, remove,
+	// containsAll, retainAll, removeAll, clear ...
+}
+
+In this approach, our NoisySet has-a HashSet . We simply define a private delegate
+field. Then for each method in HashSet (or more accurately for each method in the
+Set interface) we provide an implementation that calls through to the delegate. The
+add and addAll methods will also contain the println statements required by our
+noisy set.
+
+What is wrong with this implementation? Strictly speaking nothing, but it does suf-
+fer from the problem that if the base class ever changed, we’d need to add delegate
+methods. Also, the intent isn’t very clear. Intermixed with the two methods we actually
+changed are another 10 boilerplate methods that increase the maintenance footprint
+of the class and provide noise when trying to understand what the class is doing. Okay,
+we’re implementing a noisy set but we want its design to be noise free! Let’s consider
+an alternative implementation of NoisySet using the @Delegate annotation as shown
+in the following listing.
+
+class NoisySet {
+	@Delegate
+	Set delegate = new HashSet()
+	@Override
+	boolean add(item) {
+		println "adding $item"
+		delegate.add(item)
+	}
+	@Override
+	boolean addAll(Collection items) {
+		items.each { println "adding $it" }
+		delegate.addAll(items)
+	}
+}
+
+Set ns = new NoisySet()
+ns.add(1)
+ns.addAll([2, 3])
+assert ns.size() == 3
+
+使用 @Deleget 注解后, 都不用写 implement Set 了.
+}}}
+* 2.4 @groovy.lang.Singleton
+{{{
+The Singleton pattern is intended to ensure that only one instance of a class exists
+within your system at a time. A standard way to achieve this behavior is for a class to
+have a private static reference to this instance, a private constructor so that it cannot
+be instantiated outside the class, and a public static method to access the single
+instance. If you were to manually implement a singleton in Groovy it would look some-
+thing like this:
+
+class Zeus {
+	static final Zeus instance = new Zeus()
+	private Zeus() { }
+}
+
+assert Zeus.instance
+This isn’t too much code to write, particularly as the code generation in Groovy
+already supplies the accessor method, but it can be simplified using the @Singleton
+annotation. The obvious advantage is less code, but it also means that invoking the
+private constructor results in an exception, as shown in the following listing.
+
+import static groovy.test.GroovyAssert.shouldFail
+
+// 只要这么一句就行了
+@Singleton class Zeus { }
+
+assert Zeus.instance
+
+def ex = shouldFail(RuntimeException) { new Zeus() }
+assert ex.message == "Can't instantiate singleton Zeus. Use Zeus.instance"
+  }}}
+* 2.5 @groovy.transform.Memoized
+* 2.6 @groovy.transform.TailRecursive
+* 3. logging improvements
+* 4. declarative concurrency
+* 5. easier cloning and externalizing
+* 6. scripting support
+* 7. more transformations

@@ -1,4 +1,10 @@
 {{{
+tailored toward			-- 量身定做的
+canonical				-- adj 权威的, 按照教规的
+compatible				-- adj 兼容的, 和谐的.
+idiom					-- n 风格, 惯用语法
+instantiation			-- n 实例化, 实例
+prone					-- adj 俯卧的, 易于 ... 的, 有 ... 倾向的
 relay					-- vt 转播, 传达, 使接替; n 继电器, 传递, 替班
 debatable				-- adj 可争议的, 成问题的, 未定的
 fine-grained			-- adj 细粒度的
@@ -36,6 +42,7 @@ likelihood				-- n 可能, 可能性
 eligible				-- adj 合格的; n 合格者
 brittle					-- adj 易碎的
 excessive				-- adj 过多的, 过度的
+lean					-- vtvi 倾斜, 屈身, 倚, 使变瘦; adj 瘦的, 贫瘠的, 简洁的, 精干的
 succinct
 concise					-- adj 简洁的
 compactly				-- adv 细密地, 简洁地

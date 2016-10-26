@@ -8,3 +8,5 @@
 * [[part1/control_structure|控制结构]]
 * [[part1/object_orientation|面向对象 groovy style]]
 * [[part1/dynamic_programming_with_groovy|dynamic programming with groovy]]
+* [[part1/complie_time_metaprogramming_and_AST_transformations|complie time metaprogramming and AST transformations]]
+

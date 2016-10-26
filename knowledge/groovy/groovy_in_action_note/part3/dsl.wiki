@@ -1,0 +1,13 @@
+= domain-specific language =
+{{{
+This chapter covers:
+
+- 理解领域特定语言 dsl
+- 在 groovy 中写 dsl
+- creating readable and expressive languages
+- Testing, securing, and providing good error reporting when creating DSLs
+
+}}}
+* 1. groovy's flexible nature 
+{{{
+}}}

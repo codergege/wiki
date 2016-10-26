@@ -1,0 +1,4 @@
+= compile-time metaprogramming and AST transformations =
+
+* [[compile-time-metaprogramming-and-AST-transformations/making_groovy_cleaner_and_leaner|making groovy cleaner and leaner]]  
+* ...
