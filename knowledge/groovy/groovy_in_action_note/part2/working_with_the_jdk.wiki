@@ -1,0 +1,12 @@
+= working with the jdk =
+{{{
+This chapter will give you an overview of how
+Groovy extends the JVM , what functionality is architecture
+provided, and how to use these extensions to
+increase your productivity. You’ll find that the
+GDK extensions make Groovy more convenient to work with, make scripting easier,
+provide new dynamic features, offer a more consistent way of handling objects, and
+adapt the Java API s to the Groovy language idioms.
+  }}}
+* [[working-with-the-jdk/working_with_objects|working with objects]]
+

@@ -1,0 +1,184 @@
+= working with objects =
+
+* 1 interactive objects
+* 1.1 object information in strings
+{{{
+Often, the first task is to ask an object for some general information about itself:
+toString() in Java parlance. Groovy adds two more methods of this kind:
+
+- dump returns a description of the object’s state, namely its fields and their values.
+- inspect makes a best effort to return the object as it could appear in Groovy
+source code, with lists and maps in the format of their literal declaration. If it
+cannot do better, it falls back to toString .
+
+def newline = "\n"
+
+assert newline.toString() == "\n"
+assert newline.dump() ==
+'''<java.lang.String@a value=
+hash=10 hash32=0>'''
+assert newline.inspect() == /'\n'/
+
+inspect returns a string that’s equivalent to newline ’s literal declaration
+}}}
+* 1.2 accessing properties
+{{{
+Remember that any Groovy object can be seen as a JavaBean.
+You’ve already seen that its properties can be inspected with the getProperties
+method or the properties property. The getProperties method returns a read-only
+map of property names and their current values. During inspection, printing the
+whole map of properties is as easy as
+
+println properties
+
+or
+
+println someObj.properties
+
+下面的例子 shows property reflection in use:
+
+class MyClass {
+	def first = 1	// read-write property
+	def getSecond() { first * 2 } // read-only property
+	public third = 3	// public property
+	def myMethod() { }	// public method
+}
+
+def obj = new MyClass()
+//property check
+assert obj.hasProperty('first')
+assert obj.respondsTo('myMethod')
+
+def keys = ['first', 'second', 'class']
+assert obj.properties.keySet() == new HashSet(keys)
+assert 1 == obj.properties['first']
+assert 1 == obj.properties.first
+
+// getAt('first')
+assert 1 == obj.first
+assert 1 == obj['first'] 
+
+def one = 'first'
+def two = 'second'
+obj[one] = obj[two] // putAt(one)
+
+assert obj.dump() =~ 'first=2'
+}}}
+* 2 convenient object methods
+{{{
+How often have you typed System.out.println when programming Java? In Groovy, you
+can achieve the same result with println , which is an abbreviation for this.println ;
+and because the GDK makes println available on Object , you can use this anywhere
+in the code. This is what we call a convenience method.
+
+This section walks through the available convenience methods and their uses:
+}}}
+<hr>
+| introduced Object method         | meaning                                                                  |   |
+| addShutdownHook {closure}        | Add a shutdown hook via the Runtime                                      |   |
+| is(other)                        | Compare object identities(reference)                                     |   |
+| isCase(caseValue, switchValue)   | Default implementation: equality                                         |   |
+| print(),                         |                                                                          |   |
+| print(value),                    |                                                                          |   |
+| println(), println(value)        | System.out.print...                                                      |   |
+| printf(formatStr, value)         |                                                                          |   |
+| printf(formatStr, value[])       | Java 5 System.out.printf()                                               |   |
+| sprintf(formatStr, value)        |                                                                          |   |
+| sprintf(formatStr, value[])      | Java 5 String.format() , which returns a formatted String                |   |
+| sleep(millis)                    |                                                                          |   |
+| sleep(millis) {onInterrupt}      | static Thread.currentThread().                                           |   |
+| sleep(millis)                    |                                                                          |   |
+| use(categoryClass) {closure}     |                                                                          |   |
+| use(categoryClassList) {closure} | Use metamethods as defined in categoryClass for the scope of the closure |   |
+| with {closure}                   |                                                                          |   |
+<hr>
+{{{
+来过一遍这些方法.
+
+- is(other)
+
+java 中, == 是 identity checking, 即检查是否是同一个对象(内存地址是同一个); equals 方法才是 equality, 相等(hashcode 相等);
+而 groovy 中, == 是 equality, 而 identity checking 用 is 方法.
+
+- isCase
+
+the GDK provides a default implementation that checks for object equality. 
+Note that this means you can use any (Java) object in a Groovy grep or switch :
+
+switch(new Date(0)){
+	case new Date(0) : println 'dates are equal'
+}
+
+- with {closure}
+
+The identity or with method, which are synonyms, calls the attached closure with
+the receiver object as the closure’s delegate. Use it when a piece of code deals primar-
+ily with only one object, like the following:
+
+new Date().identity {
+	println "$date.$month.$year"
+}
+
+这个闭包中的 delegate 就是 new Date() 出来的对象
+
+The same can be done with the with method, which can be used to simplify object
+creation:
+
+def address = new Address()
+address.with {
+	streetName = 'Mainstreet'
+	houseNumber = '42'
+}
+
+- use
+
+The use method allows you to use a list of categories to extend the functionality
+provided in classes. This is done by creating a category, and using that category in the
+use method. Any method not found in the object the method is used on will be
+searched for in the applied category. For example:
+
+class StringCasingCategory {
+	static String lower(String string) {
+		return string.toLowerCase()
+	}
+}
+
+use(StringCasingCategory) {
+	assert "groovy" == "GroOvy".lower()
+}
+
+"GroOvy" 这个 String 对象中找不到 lower() 方法, 那么就会去 use 方法参数中的类中去找.
+找到 StringCasingCategory 类中有 lower 方法, 调用它, 并将 "GroOvy" 对象作为实参传入 lower 方法.
+
+- sleep
+
+text = """
+This text appears
+slowly on the screen
+as if someone was
+typing it.
+"""
+
+for (c in text) {
+	sleep 100
+	print c
+}
+
+}}}
+* 3 iterative object methods
+{{{
+With the introduction of Java 5, the Iterable<T> interface was created so that the
+object can be used in the for - each statement, which makes iterations in Java a bit eas-
+ier. For example:
+
+for (MyClass obj : collection ){
+	// do something with obj
+}
+
+While Groovy supports the preceding syntax, Groovy provides a simpler and more
+consistent way of doing this:
+
+collection.each { /* do something with it */}
+
+
+}}}

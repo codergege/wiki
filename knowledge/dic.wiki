@@ -1,4 +1,6 @@
 {{{
+subsequent				-- adj 随后的, 附随的
+twofold					-- adj 由两部分组成的, 两部分的
 tailored toward			-- 量身定做的
 canonical				-- adj 权威的, 按照教规的
 compatible				-- adj 兼容的, 和谐的.
