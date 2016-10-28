@@ -12,8 +12,9 @@ assert map == ['a':4, 'b':8]
 
 // 3. method closure
 def doubleMethod (entry){
-entry.value = entry.value * 2
+	entry.value = entry.value * 2
 }
+
 doubler = this.&doubleMethod
 map.each(doubler)
 assert map == ['a':8, 'b':16]

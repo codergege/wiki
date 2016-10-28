@@ -1,4 +1,10 @@
 {{{
+dogma					-- n 教条, 教义; adj 教条的
+pragmatic				-- adj 实用主义的
+traverse				-- vt 通过, 横越, 横贯
+surmise					-- vtvin 推测, 猜想
+tedious					-- adj 冗长乏味的
+elaborate				-- vtvi 详尽说明, 变得复杂; adj 精心制作的, 复杂的
 subsequent				-- adj 随后的, 附随的
 twofold					-- adj 由两部分组成的, 两部分的
 tailored toward			-- 量身定做的

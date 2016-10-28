@@ -23,6 +23,7 @@
 		* [ ] part1: dynamic programming with groovy: 8.4: 8.4.4 ...
 		* [ ] part1: 9: 9, 10
 		* [ ] part1: 10
+		* [ ] part3: dsl
 	* [ ] getting started 
 	* [ ] tools
 	* [ ] language specification

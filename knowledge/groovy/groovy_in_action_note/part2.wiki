@@ -1,3 +1,3 @@
 = 类库 =
 * working with builders
-* [[part2/working_with_the_jdk|working with the jdk]]
+* [[part2/working_with_the_gdk|working with the gdk]]

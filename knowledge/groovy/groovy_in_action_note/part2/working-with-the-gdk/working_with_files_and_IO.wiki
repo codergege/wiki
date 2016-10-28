@@ -1,0 +1,195 @@
+= working with files and IO =
+{{{
+File’s object iteration method examples:
+
+file = new File('Listing_12_03_File_Iteration.groovy')
+file.each { println it }
+assert file.any { it =~ /File/ }
+assert 3 == file.findAll { it =~ /File/ }.size()
+
+assert 5 == file.grep { it }.size()
+
+注意 grep 会将空行返回 false, 所以 size 值是 5.
+  }}}
+* 1 traversing the filesystem
+{{{
+groovy 遵循 java 的 File, File 同时代表文件和目录.
+展示当前目录的信息, 可以这样:
+
+file = new File('.')
+
+println file.name
+println file.absolutePath
+println file.canonicalPath
+println file.directory
+
+控制台输出:
+.
+/home/codergege/workspace/groovy/demos/inaction/.
+/home/codergege/workspace/groovy/demos/inaction
+true
+
+还有其他的重要方法, 看 gdk-api
+  }}}
+* 2 reading from input sources
+{{{
+假设 data/example.txt 有以下内容:
+
+line one
+line two
+line three
+
+对这种小文件, 一个最常见的操作之一是一次性读出全部内容放到 String 中.
+这要 .text 就可以办到了:
+
+println new File('data/example.txt').text
+
+text 属性不止在 File 中可以用, 还能用在 Reader, InputStream, 甚至 URL.
+
+下面的例子是更细粒度的控制. readline 方法返回一个 list, list 中的每个元素都是一行的内容(去掉了换行符).
+
+example = new File('data/example.txt')
+lines = ['line one', 'line two', 'line three']
+
+assert lines == example.readLines()
+example.eachLine {
+	assert it.startsWith('line')
+}
+hex = []
+example.eachByte { hex << it }
+assert hex.size() == example.length()
+example.splitEachLine(/\s/) {
+	assert 'line' == it[0]
+}
+example.withReader { reader ->
+	assert 'line one' == reader.readLine()
+}
+
+splitEachLine 方法, 依据传入的 regex 字符串或 pattern 分割 line 为 list, 传入 closure.
+withReader 方法, 创建了 example 新的 BufferedReader 并将其传入闭包, 并会确保闭包 return 后 reader 会关闭.
+
+  }}}
+* 3 writing to output destinations
+{{{
+像读文件一样, 一个最简单的写入文件的方式是调用 text 属性:
+
+new File("/tmp/example.txt").text = "line one"
+
+The left-shift operator on File has the meaning of append.
+
+def outFile = new File('data/example.txt')
+
+def lines = ['line one','line two','line three']
+
+// Writing/appending with simple method calls
+outFile.write(lines[0..1].join("\n"))
+outFile.append("\n"+lines[2])
+assert lines == outFile.readLines()
+outFile.withWriter { writer ->
+	writer.writeLine(lines[0])
+}
+outFile.withWriterAppend('ISO8859-1') { writer ->
+	writer << lines[1] << "\n"
+}
+// << 等价于 append 方法
+outFile << lines[2]
+  }}}
+*connecting a reader with a writer is as simple as*
+*writer << reader*
+* 4 filters and conversions
+{{{
+有时候 withReader, withWriter 这种不是你想要的, 那么可以使用这些把 File 转换为你想要的类型:
+newReader, newInputStream, newDataInputStream, newDataOutputStream, newObjectOutputStream,
+newOutputStream, newWriter, newPrintWriter
+
+另外一种转换内容的方法是使用 transformChar, transformLine.
+这两个方法接收一个闭包实参来决定转换的内容, 并把闭包的 return 值写入另一个实参 writer 中.
+
+还有一个过滤行的方法 filterLine, 接收一个闭包实参, 如果闭包返回 true, 就把当前处理的 line 传递给 writer 实参.
+filterLine 也可以不带 writer 实参, 那么可以通过 << 将 line 加入到 writer 中.
+
+Transforming and filtering examples:
+
+def n = System.lineSeparator()
+
+reader = new StringReader('abc')
+writer = new StringWriter()
+// 注意 'c'.netxt() 返回 'd'
+reader.transformChar(writer) { it.next() }
+assert 'bcd' == writer.toString()
+
+reader = new File('../data/example.txt').newReader()
+writer = new StringWriter()
+reader.transformLine(writer) { it - 'line' }
+assert " one${n} two${n} three${n}" == writer.toString()
+
+input = new File('../data/example.txt')
+writer = new StringWriter()
+input.filterLine(writer) { it =~ /one/ }
+assert "line one${n}" == writer.toString()
+
+writer = new StringWriter()
+writer << input.filterLine { it.size() > 8 }
+assert "line three${n}" == writer.toString()
+
+
+  }}}
+* 5 streaming serialized objects  
+{{{
+groovy 支持读写 serialized 对象, list 已经实现了 java.io.Serializable 接口了. 下面是例子    
+
+// assert [] instanceof Serializable
+assert Integer instanceof Serializable
+assert String instanceof Serializable
+assert Date instanceof Serializable
+
+file = new File('objects.dat')
+file.deleteOnExit() // Cleans up after ourselves
+
+objects = [1, "Hello Groovy!", new Date()]
+
+file.withObjectOutputStream { outstream ->
+	objects.each {
+		outstream << it // Serializes each object in the list in turn
+	}
+}
+
+retrieved = []
+
+file.withObjectInputStream { instream ->
+	instream.eachObject {
+		retrieved << it // Deserializes each object in turn
+	}
+}
+
+assert retrieved == objects
+  }}}
+*file.deleteOnExit() 方法会在程序运行完后删除 file. 推荐使用*
+* 6 temporary data and file copying
+{{{
+groovy 使用临时文件和目录非常简单. groovy 提供了创建和删除临时文件, 目录的方法, 和获取目录内容大小的方法.
+除此之外, groovy 能让你通过使用 DataOutputStream, DataInputStream 方法使 copy 文件内容变得很容易.
+
+
+// Creates a temporary directory
+File tempDir = File.createTempDir()
+// Checks that directory is empty
+assert tempDir.directorySize() == 0
+// Creates a file and sets file contents
+File source = new File(tempDir, 'input.dat')
+source.bytes = "hello world".bytes
+assert tempDir.directorySize() == 11
+
+File destination = new File(tempDir, 'output.dat')
+
+// copy
+destination.withDataOutputStream { os->
+	source.withDataInputStream { is->
+		os << is
+	}
+}
+
+assert tempDir.directorySize() == 22
+// 删除临时目录
+tempDir.deleteDir()
+  }}}

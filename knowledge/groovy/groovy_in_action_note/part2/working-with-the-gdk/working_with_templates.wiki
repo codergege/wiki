@@ -1,0 +1,71 @@
+= working with templates =
+{{{
+模板可以使用在:
+
+- html, jsf, jsp
+- 组织数据库查询语句
+- 帮助连接 web services
+- 生成代码
+- 转换 xml
+- 预定义 PostScript 文档
+- 标准 email 
+
+}}}
+* 1 understanding the template format
+{{{
+template 的 format 是启发与 jsp 语法的. template 的占位符与他们的目的:
+}}}
+| Marker          | Purpose                                    |
+| $variable       | Insert value of the variable into the text |
+| $(groovycode)   | 计算单行的 groovy 代码, 把结果插入文本中   |
+| <%=groovycode%> | 与$()比, 这个可以多行                      |
+| <%groovycode%>  | groovycode                                 |
+
+{{{
+groovy.text 包定义了多种模板引擎. 这些引擎有 createTemplate 方法, 来读取源文件的内容并返回一个模板对象.
+模板对象再用 make 方法得到最终的结果. 这个结果对象是 Writable 的, 所以可以用 writer << result 这样的方式写入.
+
+}}}
+* 2 templates in action
+{{{
+下面的例子使用了 SimpleTemplateEngine:
+
+mailReminder =
+'''
+Dear ${salutation?salutation+' ':''}$lastname,
+another month has passed and it's time for these
+<%=tasks.size()%> tasks:
+<% tasks.each { %>- $it
+<% } %>
+your collaboration is very much appreciated
+'''
+def engine = new groovy.text.SimpleTemplateEngine()
+def template = engine.createTemplate(mailReminder)
+def binding = [
+salutation: 'Mrs.',
+lastname : 'Davis',
+tasks: ['visit the Groovy in Action (GinA) page',
+		'chat with GinA readers']
+]
+
+assert template.make(binding).toString() == '''
+Dear Mrs. Davis,
+another month has passed and it's time for these
+2 tasks:
+- visit the Groovy in Action (GinA) page
+- chat with GinA readers
+
+your collaboration is very much appreciated
+'''
+// println template.make(binding).toString()
+
+上面的代码, task 部分, 也可以这样用:
+
+<%
+tasks.each { out.println('- '+it) }
+%>
+
+个人推荐这样使用比较好
+
+其他注意事项: 里面尽量用单引号.
+}}}

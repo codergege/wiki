@@ -182,3 +182,20 @@ collection.each { /* do something with it */}
 
 
 }}}
+*iterative object methods*
+| Return Value | Method                    |
+| boolean      | any {closure}             |
+| boolean      | every {closure}           |
+| Collection   | List collect {closure}    |
+| Object       | each {closure}            |
+| Object       | eachWithIndex {closure}   |
+| Object       | find {closure}            |
+| Collection   | findAll {closure}         |
+| int          | findIndexOf {closure}     |
+| List         | findIndexValues {closure} |
+| int          | findLastIndexOf {closure} |
+| Object       | findResult                |
+| List         | grep(Object filter)       |
+| Object       | inject {closure}          |
+| Collection   | split {closure}           |
+
