@@ -1,0 +1,7 @@
+= installing gradle =
+
+cd
+cd scripts
+source install_gradle_3.1.sh
+就好了.
+gradle -v 查看是否安装成功.

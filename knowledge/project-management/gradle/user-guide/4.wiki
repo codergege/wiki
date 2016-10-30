@@ -1,0 +1,251 @@
+= 4. using the gradle command line =
+
+这章介绍基本的 gradle 命令行.
+
+* 4.1 executing multiple tasks
+{{{
+你可以在一个 build 中执行多个任务, 比如 gradle compile test 会执行 compile 和 test 任务.
+gradle 会按命令行中的任务顺序去执行任务, 并且也会执行每个任务的依赖. 每个任务只会执行一次.
+看下面的例子:
+
+在 .../chapt4/1/ 目录下新建 build.gradle 文件, 并加入以下代码:
+----------------------------------------
+task compile << {
+	println 'compiling source'
+}
+
+task compileTest(dependsOn: compile) << {
+	println 'compiling unit tests'
+}
+
+task test(dependsOn: [compile, compileTest]) << {
+	println 'running unit tests'
+}
+
+task dist(dependsOn: [compile, test]) << {
+	println 'building the distribution'
+}
+----------------------------------------
+
+保存后, 在 build.gradle 文件所在目录输入命令:
+
+>gradle dist test
+
+----------------------------------------
+Starting a Gradle Daemon (subsequent builds will be faster)
+:compile
+compiling source
+:compileTest
+compiling unit tests
+:test
+running unit tests
+:dist
+building the distribution
+
+BUILD SUCCESSFUL
+
+Total time: 2.367 secs
+----------------------------------------
+
+每个 task 只会执行一次, 所以上面的例子中 gradle dist test 和 gradle dist 效果是一样的.
+gradle test test 完全与 gradle test 一致.
+}}}
+* 4.2 excluding tasks 
+{{{
+你可以使用命令行选项 -x 后面跟个任务名, 来排除一个任务, 使它不执行.
+仍然用 4.1 中的 build.gradle, 执行下面的命令:
+> gradle dist -x test
+----------------------------------------
+:compile
+compiling source
+:dist
+building the distribution
+
+BUILD SUCCESSFUL
+
+Total time: 0.58 secs
+----------------------------------------
+从这个例子的输出信息中可以看到, test task 没有被执行, 尽管它是 dist task 的一个依赖.
+你还要注意下 test task 的依赖, compileTest task 也没有被执行, 而 test task 的另外一个依赖 compile 却执行了,
+因为 compile 是 dist 的依赖.
+}}}
+* 4.3 continuing the build when a failure occurs
+{{{
+默认的, 一旦有任何任务失败, gradle 就会终止执行, 并让构建失败. 但是这样会隐藏其他可能的失败.
+为了让一次构建执行过程中发现尽量多的失败, 可以使用 --continue 选项
+
+当执行带 --continue 选项的构建时, gradle 会尽可能的去执行每个任务(前提是任务的依赖没有发生错误),
+某个任务失败时, 并不立刻终止执行. 构建过程的最后阶段会打印这些失败的任务信息.
+
+如果一个任务失败了, 那么任何随后的依赖于它的任务(不管是直接依赖还是间接依赖)都不会被执行.
+}}}
+* 4.4 task name abbreviation
+{{{
+当你在命令行指定任务名时, 仅仅需要提供足够唯一 identify 这个任务的部分名称即可.
+比如, 4.1 中的 build.gradle, 输入 gradle di. 
+
+>gradle di
+--------------------------------------------
+:compile
+compiling source
+:compileTest
+compiling unit tests
+:test
+running unit tests
+:dist
+building the distribution
+
+BUILD SUCCESSFUL
+
+Total time: 0.648 secs
+--------------------------------------------
+
+你也可以缩写驼峰命名式的任务名中的每个单词, 比如 gradle compileTest,
+可以缩写成 gradle comtest, 甚至 gradle cT.
+缩写也可以用在 -x 后面的任务名中.
+}}}
+* 4.5 selecting which build to execute
+{{{
+当你运行 gradle 命令的时候, 它会在当前目录去找一个构建文件. 你可以使用 -b 选项去选择另一个构建文件.
+如果你使用了 -b 选项, 那么 settings.gradle 文件不会被使用.
+
+在 .../chapt4/1/ 目录下, 新建 subdir/myproject.gradle
+--------------------------------------------
+task hello << {
+	println "using build file '$buildFile.name' in '$buildFile.parentFile.name'."
+}
+--------------------------------------------
+
+例子, 使用 build file 来选择 project:
+>gradle -q -b subdir/myproject.gradle hello
+--------------------------------------------
+using build file 'myproject.gradle' in 'subdir'.
+--------------------------------------------
+
+从上面的例子中可以看出脚本类中有 buildFile 这个字段, 是 File 类型的. 
+}}}
+*另外一种选择是使用 -p 选项来指定使用的工程目录. 对多工程的构建来说, 你应该使用 -p 选项而不是 -b 选项.*
+*使用 -p somedir 时, gradle 会去找 somedir/build.gradle 文件.*
+{{{
+subdir 下新建 build.gradle, 将 myproject.gradle 中的代码复制进去.
+例子, 使用 project directory 来选择 project:
+
+gradle -q -p subdir hello
+--------------------------------------------
+using build file 'build.gradle' in 'subdir'.
+--------------------------------------------
+
+}}}
+* 4.6 forcing tasks to execute
+{{{
+许多任务, 特别是那些 gradle 自己提供的, 支持 incremental builds. 
+这种任务能基于他们上次运行后输入(源文件)和输出是否有改变(比如删除了一个 class)来决定是否需要运行.
+你可以很简单的认出参与 incremental build 的任务, gradle 在构建运行期间会显示 UP-TO-DATE 文本在任务名称的边上.
+
+你可能偶尔想强制 gradle 运行所有任务, 忽略所有的 up-to-date. 只需要简单的加上 --rerun-tasks 选项就可以了.
+下面两个例子分别展示了不用和使用 --rerun-tasks 选项.
+}}}
+在 chapt4/1/ 目录. build.gradle 中加入下面代码.
+{{{
+apply plugin: "base"
+
+task doIt(type: Copy) {
+    from projectDir, {
+        include "README.md"
+    }
+    into buildDir
+}
+
+例子, 强制运行任务:
+
+> gradle doIt
+--------------------------------------------
+:doIt UP-TO-DATE
+--------------------------------------------
+
+> gradle --rerun-tasks doIt
+--------------------------------------------
+:doIt
+--------------------------------------------
+
+注意, --rerun-task 会强制所有需要的任务执行, 而不只是你在命令行中指定的那些.
+}}}
+* 4.7 obtaining information about your build
+{{{
+gradle 提供了几个内建的任务, 用于显示你的构建的特定详细信息. 这对理解你的构建的结构和依赖, 调试问题会十分有帮助.
+}}}
+*你还可以使用 project report plugin 去增加任务进你的工程, 构建时会生成他们的报告.*
+* 4.7.1 listing projects
+*执行 gradle 命令时, settings.gradle 文件会被执行(如果没用 -b 选项).*
+*如果要在 root project 下加入子工程, 只要在 settings.gradle 中加入 include 'subproject1', 'subproject2' 这样一行代码就好了.*
+{{{
+gradle projects 命令会列出当前工程下的所有子工程(定义在 settings.gradle 文件中的).
+
+在 chapt4/1/ 中新建 settings.gradle 文件, 并加入以下代码.
+
+include 'webapp', 'api'
+
+rootProject.children.each {
+	// 创建子工程目录, 如果不存在的话
+	it.buildFile.parentFile.mkdirs()
+	// 则创建一个空的 build.gradle 文件.
+	it.buildFile.text = ''
+}
+
+例子, 获取工程信息:
+
+>gradle -q projects
+--------------------------------------------
+------------------------------------------------------------
+Root project
+------------------------------------------------------------
+
+Root project '1'
++--- Project ':api'
+\--- Project ':webapp'
+
+To see a list of the tasks of a project, run gradle <project-path>:tasks
+For example, try running gradle :api:tasks
+--------------------------------------------
+
+可以通过设置 description 属性来显示每个工程的 description. 在 chapt4/1/build.gradle 文件中加入如下代码.
+
+project(':api') {
+	description = 'The shared API for the application'
+}
+
+那么再运行 gradle -q projects 命令, 输出中 api 子工程就有 description 了.
+}}}
+* 4.7.2 listing tasks
+{{{
+运行 gradle tasks 会给你列出所选工程的主要任务的列表. 这里主要任务指的是不是其他任务的依赖的任务.
+默认的, gradle tasks 输出报告只会显示那些已经被指派到一个任务组中的任务. 可以通过设置 group 属性来给任务分组.
+
+dists {
+    description = 'Builds the distribution'
+    group = 'build'
+}
+
+还可以加上 --all 选项来列出所有任务, gradle -q tasks --all.
+}}}
+* 4.7.3 show task usage details
+{{{
+gradle -q help --task taskname, 就会显示名字为 taskname 的任务的详细信息. 
+}}}
+* 4.7.4
+{{{
+运行 gradle dependencies 命令会给你所选工程的依赖列表.
+可以指定某个配置的依赖, 用 --configuration 选项, 例如 gradle -q api:dependencies --configuration testCompile
+}}}
+_这个还不太明白_
+* 4.7.5 listing project buildscript dependencies
+* 4.7.6 Getting the insight into a particular dependency
+* 4.7.7 listing project properties
+{{{
+gradle -q properties
+子工程的话也可以 gradle -q api:properties
+}}}
+* 4.7.8 profiling a build
+加入 --profile 选项就可以了.
+* 4.7.9 dry run
+有时候你会对那些任务会执行, 以什么顺序执行感兴趣. 那么就可以加上 -m 选项. 比如 gradle -m clean compile.

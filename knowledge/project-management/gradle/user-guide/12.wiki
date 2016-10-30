@@ -1,0 +1,28 @@
+= 12 The Build Environment =
+
+* 12.1 Configuring the build environment via gradle.properties
+{{{
+gradle 构建环境的一些配置可以在 3 个地方进行(如果有多个地方都进行了配置, 最后那个配置起作用):
+
+- from gradle.properties in project build dir.
+- from gradle.properties in gradle user home.
+- from system properties, e.g. when -Dsome.property is set on the command line.
+
+一些可以配置的:
+
+org.gradle.daemon 
+	可以是 true 或 false. 用于打开或关闭 gradle daemon.
+
+org.gradle.java.home
+	用于指定 jdk 路径.
+	
+org.gradle.jvmargs
+	用于配置 gradle daemon 的 jvmargs, 一般不用修改.
+
+...
+
+算了, 这章没什么用.
+  }}}
+* 12.2 Gradle properties and system properties
+* 12.3 Accessing the web via a proxy
+*上面两章十分有用, 用到时再学*

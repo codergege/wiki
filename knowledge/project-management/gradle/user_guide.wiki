@@ -1,0 +1,40 @@
+= user guide =
+
+== working with existing builds ==
+* 3 [[user-guide/3|Installing Gradle]]
+* 4 [[user-guide/4|Using the Gradle Command-Line]]
+* 5 [[user-guide/5|The Gradle Wrapper]]
+* 6 [[user-guide/6|The Gradle Daemon]]
+* 7 [[user-guide/7|Dependency Management Basics]]
+* 8 [[user-guide/8|Introduction to multi-project builds]]
+* 9 user-guide/9|Continuous build
+* 10 user-guide/10|Composite builds
+* 11 user-guide/11|Using the Gradle Graphical User Interface
+* 12 [[user-guide/12|The Build Environment]]
+* 13 [[user-guide/13|Troubleshooting]]
+* 14 *user-guide/14|Embedding Gradle using the Tooling API*
+== writing gradle build scripts ==
+* 15 [[user-guide/15|Build Script Basics]]
+* 16 [[user-guide/16|Build Init Plugin]]
+* 17 [[user-guide/17|Writing Build Scripts]]
+* 18 [[user-guide/18|More about Tasks]]
+* 19 [[user-guide/19|Working With Files]]
+* 20 [[user-guide/20|Using Ant from Gradle]]
+* 21 [[user-guide/21|The Build Lifecycle]]
+* 22 [[user-guide/22|Wrapper Plugin]]
+* 23 [[user-guide/23|Logging]]
+* 24 [[user-guide/24|Dependency Management]]
+* 25 [[user-guide/25|Multi-project Builds]]
+* 26 [[user-guide/26|Gradle Plugins]]
+* 27 [[user-guide/27|Standard Gradle plugins]]
+* 28 [[user-guide/28|The Project Report Plugin]]
+* 29 [[user-guide/29|The Build Dashboard Plugin]]
+* 30 [[user-guide/30|Comparing Builds]]
+* 31 [[user-guide/31|Publishing artifacts]]
+* 32 [[user-guide/32|The Maven Plugin]]
+* 33 [[user-guide/33|The Signing Plugin]]
+* 34 [[user-guide/34|Ivy Publishing (new)]]
+* 35 [[user-guide/35|Maven Publishing (new)]]
+* 36 [[user-guide/36|The Distribution Plugin]]
+* 37 [[user-guide/37|The Announce Plugin]]
+* 38 [[user-guide/38|The Build Announcements Plugin]]

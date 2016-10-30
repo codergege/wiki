@@ -1,0 +1,14 @@
+= the gradle daemon =
+{{{
+gradle daemon 会提高构建速度.
+gradle daemon 自 gradle3.0 起会默认启用, 安心使用.
+The Gradle Daemon is enabled by default, and we recommend always enabling it for developers’ machines.
+如果想不要 daemon 功能, 最简单的做法是在 $USER_HOME/.gradle 目录下的 gradle.properties 文件中加入下面代码:
+
+org.gradle.daemon=false
+
+如果 gradle.properties 文件不存在, 新建一个就可以了.
+
+可以用 --stop 选项停止现在的 daemon.
+  }}}
+*什么时候不要用 daemon 呢? 不推荐在持续集成和构建服务器环境当中使用 daemon.*

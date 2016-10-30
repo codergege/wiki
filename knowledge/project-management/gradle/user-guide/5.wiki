@@ -1,0 +1,38 @@
+= 5 the gradle wrapper =
+
+* 5.1 adding a wrapper to a project
+{{{
+你安装 wrapper 到工程, 通过运行 wrapper 任务.(wrapper 任务总是可用的, 即使你没加入到 build).
+命令行上可以通过 --gradle-version 指定 gradle 版本号, --gradle-distribution-url 指定下载路径.
+如果什么都不指定, wrapper 会配置 gradle 版本为运行 gradle wrapper 命令的那个 gradle.
+
+新建 chapt5 目录, 新建 build.gradle 
+例子, 工程中加入 wrapper:
+>gradle wrapper
+--------------------------------------------
+Starting a Gradle Daemon (subsequent builds will be faster)
+:wrapper
+
+BUILD SUCCESSFUL
+
+Total time: 2.613 secs
+--------------------------------------------
+
+可以看到工程中会多出 gradle/  gradlew  gradlew.bat. 这些都应该加入版本控制, git 不要忽略这些文件.
+
+你也可以在 build.gradle 中定义 wrapper task 将一些配置写进去, 而不是使用命令行, 例如:
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '3.1'
+}
+
+}}}
+*都没什么必要, 我觉得使用默认就好, 只要在工程内运行 gradle wrapper 就行了, 以后用 ./gradlew 代替 gradle 就可以了.*
+*如果你想切换到新的 gradle 版本来构建, 你不需要重新运行 gradle wrapper. 当然重新运行一下也不是什么麻烦的事情.* 
+*只需要修改 gradle/wrapper/gradle-wrapper.properties 中的配置就好啦, 但是如果想要 wrapper 的新功能, 那就再运行一下 wrapper 任务.*
+* 5.2 configuration
+{{{
+如果通过 gradlew 运行, gradle 会检查 wrapper 是否有可用的 gradle 分发包. 如果有, gradlew 会委托给 gradle 命令运行.
+如果没有找到可用的 gradle 分发包, wrapper 会先去下载一个.
+
+}}}

@@ -1,0 +1,121 @@
+= 7 Dependency Management Basics =
+
+* 7.1 what is dependency management?
+{{{
+粗略的来说, 依赖管理包括两个部分: 
+1) the dependencies of the project: incoming files. 
+
+这些 incoming files 构成了工程的依赖. 你可以告诉 gradle 你的工程的依赖是什么, 
+这样 gradle 就会去寻找这些依赖, 并让它们在你的构建中可用.
+这些依赖可能需要从远程 maven, ivy 仓库下载, 或者是本地; 或者这些依赖需要通过多工程构建中的另外一个项目的构建.
+我们把上面这段过程成为 dependency resolution.
+
+经常, 工程的依赖本身需要依赖, 比如 Hibernate core 需要一些其他的库在 classpath 中, 它才能正常运行.
+所以 gradle 也需要去找这些依赖的依赖, 并使它们可用. 我们称这个过程 transitive dependencies.
+
+2) the publications of the project: outgoing files.
+
+大部分工程的主要目的是构建一些工程外使用的文件. 比如你的工程生产一个 java 库, 你需要构建一个 jar, 可能还有 source jar,
+以及一些文档, 然后发布到哪里.
+
+这些 outgoing files 构成了工程的发布. gradle 也会为你关照这种重要的工作. 你声明了你的工程的发布, 
+gradle 就会构建它们, 并发布到指定的地方. 你可能将它们拷贝到本地目录, 上传到远程仓库;　或者给多工程构建中另一个项目去使用.
+我们称这个过程为 publication.
+}}}
+* 7.2 declaring your dependencies
+{{{
+看一个声明依赖的例子.
+
+chapt7/build.gradle:
+
+apply plugin: 'java'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile group: 'org.hibernate', name: 'hibernate-core', version: '3.6.7.Final'
+    testCompile group: 'junit', name: 'junit', version: '4.+'
+}
+
+首先, 它声明了编译工程的时候需要依赖 hibernate-core 3.6.7.Final, 并 implicately 声明了 runtime 时也需要这个依赖.
+另外构建脚本还声明了编译工程的测试时依赖任何的 junit >= 4.0.
+还有, 构建脚本告诉 gradle 从 maven 中央仓库去寻找下载这些依赖.
+}}}
+* 7.3 dependency configuration
+{{{
+在 gradle 中 dependencies 被分组进 configurations 中, 一个 configuration 只是简单的带名称的一组 dependencies 的集合.
+你可以使用 dependency configurations 去声明你的工程的外部依赖. 它们还能声明工程的发布.
+
+apply plugin: 'java' 这句表示使用 java 插件.
+java plugin 定义了大量的标准 configurations. 这些 configurations 代表这个 java plugin 要使用的 classpaths.
+
+下面列了几个 java plugin 中的 configurations:
+
+compile
+    The dependencies required to compile the production source of the project.
+
+runtime
+    The dependencies required by the production classes at runtime. By default, also includes the compile time dependencies. 
+
+testCompile
+    The dependencies required to compile the test source of the project. By default, also includes the compiled production classes and the compile time dependencies. 
+
+testRuntime
+    The dependencies required to run the tests. By default, also includes the compile, runtime and test compile dependencies. 
+
+你也可以定义制定的 configuration 在你的构建中去使用. 具体看 chapt24.
+}}}
+* 7.4 external dependencies
+{{{
+有多种类型的依赖可以声明, 其中一种叫做 external dependency.
+
+定义一个外部依赖, 你只需要把它加进一个 dependency configuration 中.
+
+例子, build.gradle:
+
+dependencies {
+    compile group: 'org.hibernate', name: 'hibernate-core', version: '3.6.7.Final'
+}
+
+一个外部依赖的唯一性是通过 group, name, version 来确定的. 决定于你使用的仓库, group 和 version 是可选的.
+上面代码的简写方式是 group:name:version.
+
+例子, build.gradle:
+
+dependencies {
+    compile 'org.hibernate:hibernate-core:3.6.7.Final'
+}
+
+}}}
+* 7.5 repositories
+{{{
+gradle 如何找到外部依赖的这些文件呢? gradle 会在一个 repository 中去找它们.
+
+默认的, gradle 不会定义任何 repository, 在使用外部依赖之前, 你需要至少定义一个 repository. 比如 maven 中央仓库.
+
+例子, build.gradle:
+
+repositories {
+    mavenCentral()
+}
+
+例子, 或者其他的 maven 仓库. build.gradle:
+
+repositories {
+    maven {
+        url "http://repo.mycompany.com/maven2"
+    }
+}
+
+或者指定本地仓库, 只要 url 中写本地仓库路径就可以了. 
+A project can have multiple repositories. Gradle will look for a dependency in each repository in the order they are specified, stopping at the first repository that contains the requested module. 
+}}}
+* 7.6 publishing artifacts
+{{{
+我总不会去发布自己的类库了.
+发布到本地 maven 仓库有用到时再学.
+}}}
+
+

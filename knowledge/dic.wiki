@@ -1,4 +1,6 @@
 {{{
+self-contained			-- adj 自给自足的, 设备齐全的
+take part in			-- 参加 ..., 参与 ... 活动
 dogma					-- n 教条, 教义; adj 教条的
 pragmatic				-- adj 实用主义的
 traverse				-- vt 通过, 横越, 横贯
