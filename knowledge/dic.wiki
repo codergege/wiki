@@ -1,4 +1,5 @@
 {{{
+vague					-- adj 模糊的, (思想上)不清楚的
 self-contained			-- adj 自给自足的, 设备齐全的
 take part in			-- 参加 ..., 参与 ... 活动
 dogma					-- n 教条, 教义; adj 教条的

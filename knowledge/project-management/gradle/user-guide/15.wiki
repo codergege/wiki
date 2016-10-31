@@ -1,0 +1,253 @@
+= 15 Build Script Basics =
+
+* 15.1 Build Script Basics
+{{{
+gradle 的所有东西都是坐在两个基本的概念上的: projects 和 tasks.
+
+每个 gradle 构建都由一个或多个 projects 构成. 一个 project 可以是一个类库的 jar;
+一个 web 应用程序; 或者代表要做的事情, 比如部署你的应用程序到演示环境或生成环境.
+
+每个 project 都由一个或多个 tasks 构成. 一个 task 代表 gralde 构建的一次原子性作业.
+  }}}
+* 15.2 Hello world
+{{{
+在命令行, 你使用 gradle 命令进行 gradle 构建. gradle 命令会在当前目录寻找一个名称为 build.gradle 的文件.
+我们称这个 build.gradle 文件为构建脚本. 尽管严格来说, 它是一个构建配置脚本. 这个构建脚本定义一个工程和它的任务.
+
+例子, chapt15/2/ 新建 build.gradle:
+
+这个构建脚本定义了一个任务, 叫做 hello, 然后给 hello 加了一个动作. 
+当你运行 gradle hello 命令, gradle 会去执行 hello 任务, hello 任务再转而去执行你提供的动作.
+这个动作只是简单的一个闭包, 包含待执行的 groovy 代码.
+  }}}
+* 15.3 A shortcut task definition
+{{{
+有一种更简洁的方式, << 代表 doLast.
+  }}}
+* 15.4 Build scripts are code
+{{{
+gradle 的构建脚本给了你 groovy 的全部力量. 
+
+你可以在给 task 的闭包中用 groovy.
+
+  }}}
+* 15.5 Task dependencies
+{{{
+你声明的任务可以依赖其他任务.
+依赖可以是懒依赖的.
+
+例子, chapt15/5/build.gradle:
+
+task hello << {
+	println 'Hello, world!'
+}
+
+task intro(dependsOn: hello) << {
+	println 'intro'
+}
+
+// dependsOn 后面的任务名可以省略单引号
+task test(dependsOn: [hello, 'intro']) << {
+	println 'test'
+}
+
+
+  }}}
+15.6 Dynamic tasks
+{{{
+groovy 语言不止可以在任务的闭包中用.
+
+例子, groovy 动态添加任务. chapt15/6/build.gradle:
+
+
+4.times { counter ->
+	task "task$counter" << {
+		println "This is task$counter."
+	}
+}
+
+>gradle task3
+--------------------------------------------
+:task3
+This is task3.
+
+BUILD SUCCESSFUL
+
+Total time: 0.787 secs
+--------------------------------------------
+
+
+  }}}
+* 15.7 Manipulating existing tasks
+{{{
+
+build.gradle
+
+4.times { counter ->
+    task "task$counter" << {
+        println "I'm task number $counter"
+    }
+}
+// 可以在声明完任务后添加依赖, 通过 api
+task0.dependsOn task2, task3
+
+Output of gradle -q task0
+
+> gradle -q task0
+I'm task number 2
+I'm task number 3
+I'm task number 0
+--------------------------------------------
+
+build.gradle
+
+task hello << {
+    println 'Hello Earth'
+}
+// 声明完任务后添加 action.
+hello.doFirst {
+    println 'Hello Venus'
+}
+hello.doLast {
+    println 'Hello Mars'
+}
+// << 是 doLast
+hello << {
+    println 'Hello Jupiter'
+}
+
+Output of gradle -q hello
+
+> gradle -q hello
+Hello Venus
+Hello Earth
+Hello Mars
+Hello Jupiter
+  }}}
+* 15.8 Shortcut notations
+{{{
+Each task is available as a property of the build script.
+  }}}
+* 15.9 Extra task properties
+{{{
+你可以添加你自己的属性给 task. 设置 ext.myProperty 一个初始值, 这样就添加了一个名称为 myProperty 的属性.
+这样 myProperty 就可以像预先定义的 task 属性那样去读, 去设置.
+
+build.gradle
+
+--------------------------------------------
+task myTask {
+    ext.myProperty = "myValue"
+}
+
+task printTaskProperties << {
+    println myTask.myProperty
+}
+--------------------------------------------
+> gradle -q printTaskProperties
+--------------------------------------------
+myValue
+--------------------------------------------
+
+注意, extra properties 不止限于在 task 中使用.
+  }}}
+* 15.10 Using Ant Tasks
+* 15.11 Using methods
+{{{
+例子, chapt15/11/ 下新建 1.txt, 2.txt, 3.txt; build.gradle:
+
+task showFiles << {
+	fileList('.').each { File file ->
+		println file.name
+	}
+}
+
+File[] fileList(String dir) {
+	new File(dir).listFiles({file -> file.isFile()} as FileFilter).sort()	
+}
+
+--------------------------------------------
+>gradle sh
+--------------------------------------------
+:showFiles
+1.txt
+2.txt
+3.txt
+build.gradle
+
+BUILD SUCCESSFUL
+
+Total time: 0.686 secs
+--------------------------------------------
+  }}}
+* 15.12 Default tasks
+{{{
+
+build.gradle
+--------------------------------------------
+defaultTasks 'clean', 'run'
+
+task clean << {
+    println 'Default Cleaning!'
+}
+
+task run << {
+    println 'Default Running!'
+}
+
+task other << {
+    println "I'm not a default task!"
+}
+--------------------------------------------
+
+Output of gradle -q
+
+--------------------------------------------
+> gradle -q
+--------------------------------------------
+Default Cleaning!
+Default Running!
+--------------------------------------------
+  }}}
+* 15.13 Configure by DAG *根据DAG(数据可用组)配置*
+{{{
+gradle 有配置阶段和执行阶段. 在配置阶段完成后, gradle 就知道了所有需要执行的任务. 
+gradle 提供了一个 hook 让这些信息可以使用: gradle.taskGraph.whenReady
+
+一个有用的例子是检查 release 任务是否要被执行, 根据这个, 给 version 配置不同的值.
+这就是 configure by DAG, 根据 release 是否可用, 进行配置.
+
+build.gradle:
+--------------------------------------------
+task distribution << {
+	// 真没想到这里能访问 gradle.taskGraph.whenReady 的闭包实参中的 version.
+    println "We build the zip with version=$version"
+}
+
+task release(dependsOn: 'distribution') << {
+    println 'We release now'
+}
+
+gradle.taskGraph.whenReady {taskGraph ->
+    if (taskGraph.hasTask(release)) {
+        version = '1.0'
+    } else {
+        version = '1.0-SNAPSHOT'
+    }
+}
+--------------------------------------------
+
+Output of gradle -q distribution
+
+--------------------------------------------
+> gradle -q distribution
+We build the zip with version=1.0-SNAPSHOT
+--------------------------------------------
+
+Output of gradle -q release
+
+--------------------------------------------
+> gradle -q release
+We build the zip with version=1.0
+We release now
+  }}}
