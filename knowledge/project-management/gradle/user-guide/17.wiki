@@ -1,0 +1,246 @@
+= 17 Writing Build Scripts =
+
+* 17.1 The Gradle build language
+{{{
+gradle 提供 dsl 来描述构建.
+
+一个构建脚本可以包含任何的 groovy 元素. 每个构建脚本文件都应该使用 utf-8 编码.
+  }}}
+* 17.2. The Project API
+{{{
+构建脚本在 gradle 中定义了一个工程. 在构建中的每个工程, gradle 创建了一个类型为 Project 的对象, 并将这个对象与构建脚本关联.
+当构建脚本运行的时候, 它配置这个 Project object:
+
+- 任何在你的构建脚本中没有定义的方法调用, 都被委托给 Project object.
+- 任何在你的构建脚本中没有定义的属性访问, 都被委托给 Project object.
+
+接下来看一个访问没有定义的 name 属性的例子. 下面的例子中 name 没有定义, 所以会委托给 project 对象. 当
+例子, chapt17/1/build.gradle:
+
+  }}}
+{{{
+--------------------------------------------
+println name
+println project.name
+--------------------------------------------
+
+>gradle -q
+--------------------------------------------
+1
+1
+
+Welcome to Gradle 3.1.
+
+To run a build, run gradle <task> ...
+
+To see a list of available tasks, run gradle tasks
+
+To see a list of command-line options, run gradle --help
+
+To see more detail about a task, run gradle help --task <task>
+--------------------------------------------
+
+可以看到打印出两个 1
+只有你定义的 property 与 project 中的 property 同名时, 才需要显示的写
+project.property
+}}}
+* 17.2.1 Standard project properties
+{{{
+| Name        | Type       | Default Value                              |
+| project     | Project    | The Project instance                       |
+| name        | String     | The name of the project directory.         |
+| path        | String     | The absolute path of the project.          |
+| description | String     | A description for the project.             |
+| projectDir  | File       | The directory containing the build script. |
+| buildDir    | File       | projectDir/build                           |
+| group       | Object     | unspecified                                |
+| version     | Object     | unspecified                                |
+| ant         | AntBuilder | An AntBuilder instance                     |
+}}}
+* 17.3 The Script API
+{{{
+当 gradle 执行一个脚本的时候, 它把脚本编译为一个实现了 Script 接口的 class.
+这意味着所有在 Script 接口中定义的属性和方法都可以在你的脚本中使用.
+}}}
+* 17.4 Declaring variables
+{{{
+在构建脚本中, 有两种变量可以声明: local variables and extra variables.
+}}}
+* 17.4.1 Local variables
+{{{
+本地变量的特性就不多说了.
+
+例子, build.gradle:
+
+String dest = 'dest'
+
+task show << {
+    println dest
+}
+--------------------------------------------
+}}}
+* 17.4.2 Extra properties
+{{{
+所有在 gradle 领域模型中的增强的对象都可以拥有额外的用户自定义的属性. 比如
+projects, tasks, source sets. 额外属性可以通过拥有对象的 ext 属性去读, 写和设置.
+另一种选择, 通过 ext 代码块去一次性添加多个属性.
+
+e.g. build.gradle:
+--------------------------------------------
+apply plugin: "java"
+
+ext {
+    springVersion = "3.1.0.RELEASE"
+    emailNotification = "build@master.org"
+}
+
+// 为每个 sourceSet 添加一个 purpose 属性.
+sourceSets.all { ext.purpose = null }
+
+sourceSets {
+    main {
+        purpose = "production"
+    }
+    test {
+        purpose = "test"
+    }
+    plugin {
+        purpose = "production"
+    }
+}
+
+task printProperties << {
+    println project.springVersion
+    println springVersion
+    println emailNotification
+    sourceSets.matching { it.purpose == "production" }.each { println it.name }
+}
+--------------------------------------------
+>gradle pri
+--------------------------------------------
+:printProperties
+3.1.0.RELEASE
+3.1.0.RELEASE
+build@master.org
+main
+plugin
+
+BUILD SUCCESSFUL
+
+Total time: 0.732 secs
+--------------------------------------------
+
+在这个例子中, 一个 ext 代码块添加了两个额外属性到 project 对象中. 另外,
+一个名称是 purpose 的属性被添加到每个 sourceSet 中, 通过设置它等于 null.
+一旦这些属性被添加了, 它们就可以像是预定义的属性那样去读和设置.
+
+额外属性的范围会比 local variables 大. Extra properties on a project are visible 
+from its subprojects.
+}}}
+* 17.5 Configuring arbitrary objects
+{{{
+project 的 configure 方法:
+
+Object configure(object, configureClosure)	
+    通过一个闭包配置一个对象, 通过将闭包的 delegate 设置为提供的 object 实参,
+这样你就不必在闭包中去每次都指定语句的上下文了.
+
+e.g. build.gradle:
+
+class InfoObject {
+    String message = null;
+    void show() {
+        println message;
+    }
+}
+
+def info = configure(new InfoObject()) {
+    // delegate to new InfoObject() 对象了, 所以不需要写 xxx.message
+    // 属性多的类, 这样配置是不错的.
+    message = 'some message ...';
+}
+
+// 如果属性少, 这样也挺简单的.
+def info2 = new InfoObject();
+info2.message = 'info2 message ...';
+
+
+task config << {
+    println info.message;
+    info.message = 'another message ...';
+    info.show();
+    println '------------';
+    println info2.message;
+    info2.message = 'another info2 message ...';
+    info2.show();
+}
+--------------------------------------------
+
+>gradle con
+--------------------------------------------
+:config
+some message ...
+another message ...
+------------
+info2 message ...
+another info2 message ...
+
+BUILD SUCCESSFUL
+
+Total time: 0.588 secs
+--------------------------------------------
+
+  }}}
+* *17.6 Configuring arbitrary objects using an external script*
+{{{
+
+e.g. build.gradle:
+--------------------------------------------
+
+class InfoObject {
+    String message = null;
+    void show() {
+        println message;
+    }
+}
+
+def info = new InfoObject();
+// 通过外部文件来设置属性值也很好.
+apply from: 'InfoObject.gradle', to: info;
+
+// 如果属性少, 这样也挺简单的.
+def info2 = new InfoObject();
+info2.message = 'info2 message ...';
+
+
+task config << {
+    println info.message;
+    info.message = 'another message ...';
+    info.show();
+    println '------------';
+    println info2.message;
+    info2.message = 'another info2 message ...';
+    info2.show();
+}
+--------------------------------------------
+
+InfoObject.gradle:
+--------------------------------------------
+
+message = 'from another gradle message ...'
+--------------------------------------------
+
+>gradle con
+--------------------------------------------
+:config
+from another gradle message ...
+another message ...
+------------
+info2 message ...
+another info2 message ...
+
+BUILD SUCCESSFUL
+
+Total time: 0.635 secs
+--------------------------------------------
+  }}}
