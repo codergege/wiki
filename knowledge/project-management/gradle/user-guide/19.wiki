@@ -1,0 +1,27 @@
+= 19 Working With Files =
+{{{
+大部分的构建工作都涉及文件, gradle 增加了一些概念和 api 以帮你达成目的.
+  }}}
+* 19.1 Locating files
+{{{
+你可以通过工程目录的相对路径去定位一个 file, 使用 project.file(java.lang.Object)
+方法.
+
+e.g. build.gradle:
+
+// 使用一个相对路径, 相对于工程目录.
+File configFile = file('src/main/resources/config.xml');
+// 使用绝对路径.
+configFile = file(configFile.absolutePath)
+// 使用 File 类型, 带当前目录的相对路径, 而不是相对于工程目录, 这种方式比较推荐.
+configFile = file(new File('src/main/resources/config.xml'));
+
+println '--> ' + configFile.name
+--------------------------------------------
+
+  }}}
+  
+* 19.2 File collections
+{{{
+
+  }}}

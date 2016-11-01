@@ -1,0 +1,402 @@
+= 18 More about Tasks =
+{{{
+gradle 支持增强的 tasks, 这种 task 有自己的属性和方法. 这样的 task 可以是你
+自定义的, 也可以是 grale 内建的
+}}}
+
+* 18.1, 2, 3, 4, 5
+{{{
+e.g. build.gradle:
+
+/**
+* 各种声明任务
+*--------------------------------------------
+*/
+// task1
+task('task1') {
+    doLast {
+        println 'this is task1';
+    }
+}
+// task2
+task task2 << {
+    println 'this is task2';
+}
+
+// task3: 与 task1 调用了同样的方法. Task task(String name, Closure closure)
+task task3 {
+    doLast {
+        println 'this is task3'
+    }
+}
+
+// task4: 调用 Task task(Map<String, ?> args, String name, Closure closure)
+task([dependsOn:['task2', 'task3']], 'task4', {
+    doFirst {
+        println 'this is task4' 
+    }
+    doLast {
+        println 'task4 do last'
+    }
+});
+
+// task5: 与 task4 调用同样的方法, 省略了() 和任务名称的 ''
+// 注意, 参数间的逗号不能省略.
+task dependsOn:[task2, task3], task5, {
+    doLast {
+        println 'this is task5'
+    }
+};
+
+// task6: 与 task5 相比, 参数顺序变了.
+task task6, dependsOn:[task2, task3], {
+    doLast {
+        println 'this is task6'
+    }
+};
+
+// task7: 同 task6, 但是用了 <<
+task task7, dependsOn:task2 << {
+    println 'this is task7'
+}
+
+// task8: 下面这个用()代替逗号, 看起来很精简, 但是语义对我来说不清楚, 不如用逗号.
+task task8(dependsOn:task2) << {
+   println 'this is taskA' 
+}
+
+/*--------------------------------------------*/
+
+/* 
+* 使用闭包添加任务依赖.
+* --------------------------------------------
+*/
+task task9;
+task libA << {
+    println 'libA'
+}
+task libB << {
+    println 'libB'
+}
+task libC << {
+    println 'libC'
+}
+
+task9.dependsOn {
+    tasks.findAll { task ->
+        task.name.startsWith('lib'); 
+    }
+}
+
+println task9.dependsOn
+
+//def tasklist = new ArrayList(tasks.findAll());
+
+tasks.each {
+    println 'task each -> ' + it.name
+    println 'task each -> ' + it.dependsOn
+    println 'task each -> ' + it.path
+}
+
+/*--------------------------------------------*/ 
+  }}}
+* 18.5 Ordering tasks
+{{{
+task ordering 是个 incubating 特性.
+
+有时候控制几个任务的执行顺序, 而不显式的添加他们间的依赖是十分有用的. ordering
+和 dependency 的最只要区别就是 ordering 不会对其他任务产生影响.
+
+ordering 会十分有用的几个场景:
+
+- Enforce sequential ordering of tasks: e.g. 'build' never runs before 'clean'.
+- Run build validations early in the build: e.g. validate I have the correct 
+credentials before starting the work for a release build.
+- Get feedback faster by running quick verification tasks before long 
+verification tasks: e.g. unit tests should run before integration tests.
+- A task that aggregates the results of all tasks of a particular type: e.g. 
+test report task combines the outputs of all executed test tasks.
+
+有两个 ordering rules 可用: must run after 和 should run after.
+区别就不用在意了.
+
+使用了 ordering rules 后, 单独使用某个 task 也完全没问题.
+
+如果用了 --continue 选项, 前面的任务失败后, 后面的任务也会继续执行.
+
+e.g. build.gradle:
+
+task taskA << {
+    println 'this is taskA';
+}
+
+task taskB << {
+    println 'this is taskB';
+}
+--------------------------------------------
+taskA.mustRunAfter taskB;
+codergege@codergege-OptiPlex-980:2$ gradle taskA taskB
+:taskB
+this is taskB
+:taskA
+this is taskA
+
+BUILD SUCCESSFUL
+
+Total time: 0.718 secs
+codergege@codergege-OptiPlex-980:2$ gradle taskA
+:taskA
+this is taskA
+
+BUILD SUCCESSFUL
+
+Total time: 0.751 secs
+codergege@codergege-OptiPlex-980:2$ gradle taskB
+:taskB
+this is taskB
+
+BUILD SUCCESSFUL
+
+Total time: 0.667 secs
+--------------------------------------------
+
+  }}}
+* 18.6 Adding a description to a task
+{{{
+可以给任务添加描述, 执行 gradle tasks 命令时就能看到任务的描述了.
+
+e.g. build.gradle:
+
+task taskc {
+    description = 'desc taskc';
+    doLast {
+        println 'this is taskc';
+    }
+}
+--------------------------------------------
+
+  }}}
+* 18.7 Replacing tasks
+{{{
+e.g. build.gradle:
+
+task taskA << {
+    println 'this is taskA';
+}
+
+task taskB << {
+    println 'this is taskB';
+}
+
+task taskc {
+    description = 'desc taskc';
+    doLast {
+        println 'this is taskc';
+    }
+}
+
+taskA.mustRunAfter taskB;
+
+// taskd
+task dependsOn:taskc, taskd {
+    doLast {
+        println 'this is taskd depends on taskc';
+    }
+}
+
+
+// taskd: map 实参中有多个元素时, map 和 taskname 得用(), 不然会报错.
+task ([overwrite:true, dependsOn:[taskA, taskB, taskc]], taskd) {
+    description = '--> new taskd';
+    doLast {
+        println '--> taskd';
+    }
+}
+
+// taskd: 上面的简写方式, 为了语义清楚, 以后还是用上面的吧.
+task taskd(overwrite:true, dependsOn:[taskA, taskB]) {
+    description = 'new taskd, overrided';
+    doLast {
+        println 'this is new taskd';
+    }
+}
+--------------------------------------------
+  }}}
+* 18.8 Skipping tasks
+{{{
+gradle 提供了多种方式跳过任务.
+}}}
+* 18.8.1 Using a predicate
+{{{
+你能用 onlyIf 方法添加一个 predicate 给任务. 只有 predicate 为 true 时,
+任务才会执行. 你用一个闭包去实现 predicate, 作为实参传给 onlyIf 方法.
+
+e.g. build.gradle:
+
+// 可以通过设置一个 skipTaska 属性给 project, 或者在命令行中 -PskipTaska
+// 加属性给 project.
+ext.skipTaska = null
+
+task taska {
+    // 一个 predicate, 如果 project 有 skipTaska 属性, 那么 taska 就会被跳过,
+    // 不去执行.
+    onlyIf { !project.hasProperty('skipTaska') }
+    doLast {
+        println 'This is taska.'
+    }
+}
+
+}}}
+* 18.8.2 Using StopExecutionException
+{{{
+如果 predicte 不能满足你跳过一个任务的逻辑需求, 那就使用 StopExecutionException.
+如果这个异常是被一个动作抛出的, 那么这个动作接下来的执行就会停止, 包括这个任务的
+随后动作. 构建会继续执行下一个任务. 即使任务 a 是 b 的依赖, a 抛出了
+StopExecutionException 异常, 但是 b 任务不会受影响, 还会执行.
+
+e.g. build.gradle:
+
+task task1 {
+    doFirst {
+        println 'task1-doFirst';
+        if(true) throw new StopExecutionException();
+        println 'This will not print.'
+    }
+
+    doLast {
+        println 'doLast will not print';
+    }
+}
+
+task task2(dependsOn:task1) {
+    doLast {
+        println "I'm not affected.";
+    }
+}
+--------------------------------------------
+
+codergege@codergege-OptiPlex-980:8$ gradle task2
+:task1
+task1-doFirst
+:task2
+I'm not affected.
+
+BUILD SUCCESSFUL
+
+Total time: 0.694 secs
+--------------------------------------------
+
+}}}
+* 18.8.3 Enabling and disabling tasks
+Every task has an enabled flag which defaults to true. Setting it to false %%{{{
+prevents the execution of any of the task's actions.
+
+Example 18.22. Enabling and disabling tasks
+
+build.gradle
+
+task disableMe << {
+    println 'This should not be printed if the task is disabled.'
+}
+disableMe.enabled = false%%}}}
+* 18.9 Up-to-date checks (AKA Incremental Build)
+An important part of any build tool is the ability to avoid doing work that has%%{{{
+already been done. Consider the process of compilation. Once your source files
+have been compiled, there should be no need to recompile them unless something
+has changed that affects the output, such as the modification of a source file
+or the removal of an output file. And compilation can take a significant amount
+of time, so skipping the step when it’s not needed saves a lot of time.
+
+Gradle supports this behavior out of the box through a feature it calls
+incremental build. 
+
+How does incremental build work? And what does it take to make use of it in your
+own tasks? Let’s take a look. %%}}}
+* 18.9.1 Task inputs and outputs
+As part of incremental build, Gradle tests whether any of the task inputs or%%{{{
+outputs have changed since the last build. If they haven’t, Gradle can consider
+the task up to date and therefore skip executing its actions. Also note that
+incremental build won’t work unless a task has at least one task output,
+although tasks usually have at least one input as well.
+
+What this means for build authors is simple: you need to tell Gradle which task
+properties are inputs and which are outputs. If a task property affects the
+output, be sure to register it as an input, otherwise the task will be
+considered up to date when it’s not. Conversely, don’t register properties as
+inputs if they don’t affect the output, otherwise the task will potentially
+execute when it doesn’t need to. Also be careful of non-deterministic tasks that
+may generate different output for exactly the same inputs: these should not be
+configured for incremental build as the up-to-date checks won’t work.
+
+Let’s now look at how you can register task properties as inputs and outputs.%%}}}
+*这章太难了, 算了, 就算重复执行做过的任务对我来说也没什么, 所以 Incremental*
+ *Build 就算了吧*
+* 18.10 Task rules 
+{{{
+这章了解就可以了.
+  }}}
+
+    addRule 方法定义(project.tasks 对象中): %%{{{
+
+    Rule addRule(String description, Closure ruleAction)
+
+    当一个未知的对象通过名称被需求时, ruleAction 闭包被执行. 这个 request name
+    会被当做实参传入闭包中.
+    Adds a rule to this collection. The given closure is executed when an
+    unknown object is requested by name. The requested name is passed to the
+    closure as a parameter.
+
+    Parameters: 
+        description - The description of the rule.  
+        ruleAction - The closure to execute to apply the rule.  
+    Returns:
+        The added rule.%%}}}
+{{{
+Sometimes you want to have a task whose behavior depends on a large or infinite number value range of parameters. A very nice and expressive way to provide such tasks are task rules:
+
+Example 18.36. Task rule
+
+build.gradle
+
+tasks.addRule("Pattern: ping<ID>") { String taskName ->
+    if (taskName.startsWith("ping")) {
+        task(taskName) << {
+            println "Pinging: " + (taskName - 'ping')
+        }
+    }
+}
+
+Output of gradle -q pingServer1
+
+> gradle -q pingServer1
+Pinging: Server1
+
+The String parameter is used as a description for the rule, which is shown with gradle tasks.
+
+Rules are not only used when calling tasks from the command line. You can also create dependsOn relations on rule based tasks:
+
+Example 18.37. Dependency on rule based tasks
+
+build.gradle
+
+tasks.addRule("Pattern: ping<ID>") { String taskName ->
+    if (taskName.startsWith("ping")) {
+        task(taskName) << {
+            println "Pinging: " + (taskName - 'ping')
+        }
+    }
+}
+
+task groupPing {
+    dependsOn pingServer1, pingServer2
+}
+
+Output of gradle -q groupPing
+
+> gradle -q groupPing
+Pinging: Server1
+Pinging: Server2
+
+If you run “gradle -q tasks” you won't find a task named “pingServer1” or “pingServer2”, but this script is executing logic based on the request to run those tasks.
+}}}
+

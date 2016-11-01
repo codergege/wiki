@@ -1,4 +1,6 @@
 {{{
+conform                 -- vivt 符合, 使遵守
+out of the box          -- adj 非常好的
 vague					-- adj 模糊的, (思想上)不清楚的
 self-contained			-- adj 自给自足的, 设备齐全的
 take part in			-- 参加 ..., 参与 ... 活动
@@ -37,6 +39,7 @@ intuitive				-- adj 直观的
 lineage					-- n 血统, 世系
 lenient					-- adj 宽容的, 仁慈的
 scale					-- n 级别
+notation                -- n 记号, 标记法
 notion					-- n 概念, 奇想, 打算
 notably					-- adv 尤其, 显著地
 notable					-- n 名人; adj 著名的
