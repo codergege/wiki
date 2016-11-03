@@ -4,24 +4,60 @@
   }}}
 * 19.1 Locating files
 {{{
-你可以通过工程目录的相对路径去定位一个 file, 使用 project.file(java.lang.Object)
+你可以通过工程目录相对路径去定位一个 file, 使用 project.file(java.lang.Object)
 方法.
-
 e.g. build.gradle:
 
-// 使用一个相对路径, 相对于工程目录.
+// 使用一个相对路径, 相对于工程目录, 这种方式比较推荐.
 File configFile = file('src/main/resources/config.xml');
 // 使用绝对路径.
 configFile = file(configFile.absolutePath)
-// 使用 File 类型, 带当前目录的相对路径, 而不是相对于工程目录, 这种方式比较推荐.
+// 使用 File 类型.
 configFile = file(new File('src/main/resources/config.xml'));
-
 println '--> ' + configFile.name
 --------------------------------------------
-
-  }}}
+}}}
   
 * 19.2 File collections
 {{{
+一个 file collection 是文件的集合,  实现了 FileCollection 接口. gradle 类中很多
+对象实现了这个接口, 比如 dependency configuration.
 
-  }}}
+其中一个获取 FileCollection 实例的方式是使用 project.files(java.lang.Object[])
+方法. 你可以传给这个方法任意数量的对象, 然后他们会被转换称一个文件对象 set. 你也
+可以传 collections, iterables, maps, 和 arrays 到 files 方法, 这些集合会被
+flatened, 然后里面的内容会被转换给 File 实例.
+
+e.g. build.gradle:
+
+build.gradle
+
+FileCollection collection = files('src/file1.txt',
+                                  new File('src/file2.txt'),
+                                  ['src/file3.txt', 'src/file4.txt'])
+-------------------------------------------- 
+
+一个 file collection 是可迭代的, 并且能通过 as 转换为其他类型. 还能使用加减操作
+符.
+
+e.g. build.gradle:
+
+// Iterate over the files in the collection
+collection.each {File file ->
+    println file.name
+}
+
+// Convert the collection to various types
+Set set = collection.files
+Set set2 = collection as Set
+List list = collection as List
+String path = collection.asPath
+File file = collection.singleFile
+File file2 = collection as File
+
+// Add and subtract collections
+def union = collection + files('src/file3.txt')
+def different = collection - files('src/file3.txt')
+--------------------------------------------
+
+}}}
