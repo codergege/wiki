@@ -17,7 +17,6 @@ configFile = file(new File('src/main/resources/config.xml'));
 println '--> ' + configFile.name
 --------------------------------------------
 }}}
-  
 * 19.2 File collections
 {{{
 一个 file collection 是文件的集合,  实现了 FileCollection 接口. gradle 类中很多
@@ -60,4 +59,143 @@ def union = collection + files('src/file3.txt')
 def different = collection - files('src/file3.txt')
 --------------------------------------------
 
+传闭包或 callable 实例给 files 方法也是可以的.
+
+e.g. build.gradle:
+
+// 不管在哪里, this 都是 Script 实例.
+task list << {
+    File srcDir
+
+    def collection = files { srcDir.listFiles() }
+
+    srcDir = file('src')
+    // relativePath 是 Script 的方法, 不是 project 的哦! 没有 qualified
+    // 修饰的属性和方法, 先去找 project, 没有的话再去 Script 中找? 我也不知道为
+    // 什么!
+    println "Content of $srcDir.name, " + this.relativePath(srcDir) + ":"
+    assert this instanceof Script
+    println delegate
+    // collect 方法返回一个 list. 这里 this 不用写.
+    collection.collect { this.relativePath(it) }.sort().each { println it }
+
+    srcDir = file('src/main')
+    println ''
+    println "Content of $srcDir.name, " + relativePath(srcDir) + ":"
+    collection.collect { relativePath(it) }.sort().each { println it }
+}
+
+    assert this instanceof Script
+    assert ! (this instanceof Project)
+--------------------------------------------    
+
+你可以传给 files 方法的其他类型有, FileCollection, Task, TaskOutputs.
+
+需要重点注意的是, 一个 file collection 里的内容是 evaluated lazily 的.
 }}}
+* 19.3 File trees
+{{{
+一个 file tree 是有组织的文件集合, 实现了 FileTree 接口. FileTree 接口继承自
+FileCollection. 所以你可以把 file tree 当成 file collection 也是没问题的. gradle
+中的一些对象实现了 FileTree 接口, 比如 source sets.
+
+一种获取 file tree 的方式是使用 Project.fileTree(java.util.Map) 方法. 这样会创建
+一个有 base directory, Ant 风格的 include, exclude 模式的 file tree.
+
+e.g. build.gradle:
+
+// Create a file tree with a base directory
+FileTree tree = fileTree(dir: 'src/main')
+
+// Add include and exclude patterns to the tree
+tree.include '**/*.java'
+tree.exclude '**/Abstract*'
+
+// Create a tree using path
+tree = fileTree('src').include('**/*.java')
+
+// Create a tree using closure
+tree = fileTree('src') {
+    include '**/*.java'
+}
+
+// Create a tree using a map
+tree = fileTree(dir: 'src', include: '**/*.java')
+tree = fileTree(dir: 'src', includes: ['**/*.java', '**/*.xml'])
+tree = fileTree(dir: 'src', include: '**/*.java', exclude: '**/*test*/**')
+
+// Iterate over the contents of a tree
+tree.each {File file ->
+    println file
+}
+
+// Filter a tree
+FileTree filtered = tree.matching {
+    include 'org/gradle/api/**'
+}
+
+// Add trees together
+FileTree sum = tree + fileTree(dir: 'src/test')
+
+// Visit the elements of the tree
+tree.visit {element ->
+    println "$element.relativePath => $element.file"
+}
+--------------------------------------------
+}}}
+* 19.4 Using the contents of an archive as a file tree
+* 19.5 Specifying a set of input files
+{{{
+许多 gralde 对象有可以接收 a set of files 的属性. 比如 JavaCompile 任务有一个
+source 属性, 用于定义 the sources file to compile. 你可以设置这种属性的值为
+files 方法能接收的类型. 这意味着你能使用 File, String, collection,
+FileCollection, 甚至 closure.
+
+通常, 会有一个与这种属性名相同的方法, 接收的类型也是一样的.
+
+e.g. build.gradle:
+
+task compile(type: JavaCompile)
+
+// Use a File object to specify the source directory
+compile {
+    source = file('src/main/java')
+}
+
+// Use a String path to specify the source directory
+compile {
+    source = 'src/main/java'
+}
+
+// Use a collection to specify multiple source directories
+compile {
+    source = ['src/main/java', '../shared/java']
+}
+
+// Use a FileCollection (or FileTree in this case) to specify the source files
+compile {
+    source = fileTree(dir: 'src/main/java').matching { include 'org/gradle/api/**' }
+}
+
+// Using a closure to specify the source files.
+compile {
+    source = {
+        // Use the contents of each zip file in the src dir
+        file('src').listFiles().findAll {it.name.endsWith('.zip')}.collect { zipTree(it) }
+    }
+}
+
+// 与 source 属性同名的 source() 方法.
+compile {
+    // Add some source directories use String paths
+    source 'src/main/java', 'src/main/groovy'
+
+    // Add a source directory using a File object
+    source file('../shared/java')
+
+    // Add some source directories using a closure
+    source { file('src/test/').listFiles() }
+}
+--------------------------------------------
+}}}
+* 后面的 copy 内容看原版 user guide. filter 部分有点难, 可以跳过不看.
