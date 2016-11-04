@@ -1,4 +1,5 @@
 {{{
+mandatory               -- adj 强制的
 conform                 -- vivt 符合, 使遵守
 out of the box          -- adj 非常好的
 vague					-- adj 模糊的, (思想上)不清楚的

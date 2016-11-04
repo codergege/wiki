@@ -1,0 +1,45 @@
+= git 忽略文件和目录 =
+
+git 有三种方式进行忽略文件, 另外两种不常用的全局的忽略就不记了, 反正我不用.
+
+https://github.com/github/gitignore 这里有一些不错的文件可以看看.
+
+*.gitignore只能忽略那些原来没有被track的文件*
+
+git repository 根目录下新建 .gitignore 文件
+
+例子:
+{{{
+# 忽略*.o和*.a文件
+ *.[oa]
+
+# 忽略*.b和*.B文件, my.b除外
+*.[bB]
+!my.b
+
+# 忽略dbg文件和dbg目录
+dbg
+
+# 只忽略dbg目录, 不忽略dbg文件
+dbg/
+
+# 只忽略dbg文件, 不忽略dbg目录
+dbg
+!dbg/
+
+# 只忽略当前目录下的dbg文件和目录, 子目录的dbg不在忽略范围内
+/dbg
+}}}
+
+我的 workspace 加入 git 版本控制, .gitignore 应该加入一下内容:
+{{{
+# 只忽略 build 目录, 不忽略 build 文件
+build/
+# 忽略所有 calss, jar, zip, 7z, tar
+*.class
+*.jar
+*.zip
+*.7z
+*.tar
+
+}}}

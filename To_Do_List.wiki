@@ -16,7 +16,12 @@
 		* [ ] 官网文档 
 		* [ ] book: java reflection in action
 	* [ ] the extension mechanism
+	* [ ] 选择一种 log 框架
 	
+* [ ] junit
+    * [ ] 测试驱动开发
+    * [ ] gradle test
+    
 * [ ] groovy
 	* [ ] book: groovy in action 2edition 
 		* [ ] part1: 闭包: support for design patterns
@@ -33,11 +38,14 @@
 	* [ ] getting start
 	* [ ] install gradle 脚本
 	* [ ] book: gradle in action 
+	* [ ] gradle javadoc dashboard test.
 	
 * [ ] git
 	* [ ] 补充笔记 git/best_practice
 	 
 * [ ] linux
+	* [ ] set up develop environment 得更新了
+		* [ ] git 需要 clone 并设置的: vimwiki, workspace, script, .vim
 	* [ ] os
 		* [ ] vpn
 		* [ ] dpkg 用法

@@ -1,5 +1,6 @@
 = gradle =
 
 * [[gradle/user_guide|gradle user guide]]
-* [[gradle/gradle_in_action_note|gradle in action 学习笔记]]
 * [[gradle/example|实例]]
+* [[gradle/note|note]]
+

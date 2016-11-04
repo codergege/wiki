@@ -20,6 +20,7 @@
 * [[knowledge/java/spring|spring]]						-- spring
 * [[knowledge/java/springmvc|springmvc]]				-- springmvc
 * [[knowledge/java/mybatis|mybatis]]					-- mybatis
+* [[knowledge/java/junit|junit]]
 
 == web ==
 * [[knowledge/web/html|html]]							-- html 
@@ -31,6 +32,7 @@
 == Groovy ==
 * [[knowledge/groovy/getting_started|getting started]]
 * [[knowledge/groovy/groovy_in_action_note|grooovy in action note]]
+
 == Project Management ==
 * [[knowledge/project-management/git|git]]				-- git 
 * [[knowledge/project-management/maven|maven]]			-- maven
