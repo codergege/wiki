@@ -102,3 +102,5 @@ key: previous tab: ctrl+k; next tab: ctrl+j;
 unbinding key: c-w
 3. 安装 vrapper
 }}}
+
+* 安装坚果云

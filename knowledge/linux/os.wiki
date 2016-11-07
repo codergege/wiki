@@ -1,5 +1,6 @@
 = os =
 * [[os/modify_command_tip|修改命令行提示符]] -- 修改 shell 提示符
+* [[os/安装本地_deb]]
 * [[os/tar|tar]] -- tar 用法
 * [[os/7z|7z]]
 * [[os/dtrx|dtrx]] -- Do The Right eXtraction 十分好用的解压工具
