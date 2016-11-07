@@ -5,15 +5,27 @@ apt-get install libncurses5-dev python-dev libgtk-3-dev libx11-dev libxt-dev lib
 第一个安装的东西必须是 git, 因为很多配置, 脚本要去 github clone 下来
 1) apt-get install git
 2) 接下来开始 clone
-	- study-note
+	- vimwiki
 	在 ~ 目录下
-	git clone git@github.com:codergege/study-note
-	mv study-note note
+	git clone https://github.com/codergege/vimwiki
+	根据笔记生成 git ssh key
 	
 	- script
 	在 ~ 目录下, 
-	git clone git@github.com:codergege/script
+	git clone https://github.com/codergege/script
 
+	- workspace
+	在 ~ 目录下, 
+	git clone https://github.com/codergege/workspace
+
+
+    clone 下来后还需要 git 配置, 进行版本控制.
+    git config --global user.name "codergege"
+    git config --global user.email "codergege@163.com"
+    git remote -v
+    git remote remove origin
+    git remote add git@github.com:codergege/xxx
+    
 2. 安装配置 vim
  编译安装最新版本 vim, 并用 git 管理 
 1) mkdir -p develop/installation
@@ -75,4 +87,18 @@ apt-get install libaio-dev
 6. 重启 shutdown -r now
 在 3-5 步执行完后, 重启
 
+}}}
+
+* 安装 eclipse
+{{{
+1. 安装 eclipse
+cd 
+cd script
+sh install_eclipsexx.sh
+
+2. 配置 eclipse
+
+key: previous tab: ctrl+k; next tab: ctrl+j; 
+unbinding key: c-w
+3. 安装 vrapper
 }}}
