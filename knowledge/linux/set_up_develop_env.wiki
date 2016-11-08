@@ -100,7 +100,9 @@ sh install_eclipsexx.sh
 
 key: previous tab: ctrl+k; next tab: ctrl+j; 
 unbinding key: c-w
-3. 安装 vrapper
+3. 安装 eclipse 插件
+vrapper
+gradle
 }}}
 
 * 安装坚果云

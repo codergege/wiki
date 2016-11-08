@@ -1,0 +1,8 @@
+= note =
+
+* mysql 读取 sql 文件.
+{{{
+1 进入 mysql 
+2 输入命令 source sql_全路径.sql
+    mysql>source /home/codergege/nutstore/config/sql/mysql_demo.sql
+}}}
