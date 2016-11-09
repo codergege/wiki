@@ -1,4 +1,9 @@
 {{{
+whereby                 -- adv 凭借 ... , 通过 ...
+thorough                -- adj 彻底的, 全面的
+foremost                -- adj 最重要的, 最前面的, 首先
+amongst                 -- prep 在 ... 中
+be integral to          -- 不可或缺的
 mandatory               -- adj 强制的
 conform                 -- vivt 符合, 使遵守
 out of the box          -- adj 非常好的

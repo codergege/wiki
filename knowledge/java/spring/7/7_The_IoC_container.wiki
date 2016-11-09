@@ -1,0 +1,296 @@
+= 7 The IoC Container =
+
+* 7.1 Introduction to the Spring IoC container and beans
+{{{
+org.springframework.beans 和 org.springframework.context 这两个包是spring
+IOC容器的基础包. BeanFactory 接口 提供了各种配置, 用于管理任何对象. 
+ApplicationContext 是 BeanFactory的子接口.
+
+简而言之, BeanFactory 提供了配置框架和基础功能, ApplicationContext 增加了更多的
+企业应用用能. ApplicationContext 是 BeanFactory的超集, 是本章的 spring IOC 示例
+中的指定容器. 
+}}}
+* 7.2 Container overview
+{{{
+接口 org.springframework.context.ApplicationContext 代表了srping IoC 容器, 负责实
+例化, 配置和组装前面提到的 beans.
+
+在单独的应用中，通常使用 ClassPathXmlApplicationContext 或者
+FileSystemXmlApplicationContext.
+}}}
+* 7.2.1 Configuration metadata
+{{{
+三种配置元数据的方式, xml, annotation-based configuration, java-based
+configuration.
+
+一个 xml 配置的例子:
+
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="http://www.springframework.org/schema/beans
+http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <bean id="..." class="...">
+    <!-- bean的详细配置 -->
+    </bean>
+
+    <bean id="..." class="...">
+    <!-- bean的详细配置 -->
+    </bean>
+
+    <!-- 其他bean -->
+
+</beans>
+
+
+}}}
+* 7.2.2 Instantiating a container
+{{{
+最常用的容器实例化方式是:
+
+ApplicationContext context = 
+        new ClassPathXmlApplicationContext(new String[] {"services.xml", "daos.xml"}); 
+
+下面是 services.xml:
+
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <!-- services -->
+
+    <bean id="petStore" class="org.springframework.samples.jpetstore.services.PetStoreServiceImpl">
+        <property name="accountDao" ref="accountDao"/>
+        <property name="itemDao" ref="itemDao"/>
+        <!-- additional collaborators and configuration for this bean go here -->
+    </bean>
+
+    <!-- more bean definitions for services go here -->
+
+</beans>
+--------------------------------------------
+下面是 daos.xml:
+
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <bean id="accountDao"
+        class="org.springframework.samples.jpetstore.dao.jpa.JpaAccountDao">
+        <!-- additional collaborators and configuration for this bean go here -->
+    </bean>
+
+    <bean id="itemDao" class="org.springframework.samples.jpetstore.dao.jpa.JpaItemDao">
+        <!-- additional collaborators and configuration for this bean go here -->
+    </bean>
+
+    <!-- more bean definitions for data access objects go here -->
+
+</beans>
+}}}
+*Composing XML-based configuration metadata*
+{{{
+多个配置文件共同定义bean非常有用. 通常, 每个XML配置文件在你的架构中代表一个逻辑层
+或者一个模块.
+
+你可以使用 application context 构造方法加载多个 xml 配置文件(就像上面的例子), 也
+可以加载一个配置文件, 然后在这个配置文件中 <import/> 其他的 xml 配置文件.
+
+像这样:
+
+<beans>
+    <import resource="services.xml"/>
+    <import resource="resources/messageSource.xml"/>
+    <import resource="/resources/themeSource.xml"/>
+
+    <bean id="bean1" class="..."/>
+    <bean id="bean2" class="..."/>
+</beans>
+
+不推荐使用 / 开头, 它会被 spring 忽略, resource 的值都会被解析为相对路径或
+classpath 中的相对路径.
+
+推荐使用 file:C:/config/services.xml 或者 classpath:/config/services.xml 这种全
+路径的方式.
+
+}}}
+* 7.2.3 Using the container
+{{{
+使用 ApplicationContext 的 T getBean(String name, Class<T> requiredType) 方法,
+你可以得到想要的 bean 实例.
+
+// create and configure beans
+ApplicationContext context =
+    new ClassPathXmlApplicationContext(new String[] {"services.xml", "daos.xml"});
+
+// retrieve configured instance
+PetStoreService service = context.getBean("petStore", PetStoreService.class);
+
+// use configured instance
+List<String> userList = service.getUsernameList();
+}}}
+* 7.3 Bean overview
+* 7.4 Dependencies
+* 7.4.1 Dependency Injection
+
+*依赖注入有两种方式, 基于 构造方法的依赖注入 和 基于 setter 的依赖注入.*
+
+*Constructor-based dependency injection*
+{{{
+下面是一个 POJO 类:
+
+构造参数解决方案，会匹配所使用的参数类型。如果在bean的定义中，构造参数不存在歧义，那么，在bean定义中定义的构造参数的次序，在bean实例化时，就是提供给适合的构造参数的次序。看这个类：
+
+package x.y;
+
+public class Foo {
+
+    public Foo(Bar bar, Baz baz) {
+        // ...
+    }
+
+}
+
+不存在歧义，假设Bar和Baz类没有集成关系，那么下面的配置是合法的，而且，不需要在<constructor-arg/>元素里指定构造参数的明确的indexes索引或者类型。
+
+<beans>
+    <bean id="foo" class="x.y.Foo">
+        <constructor-arg ref="bar"/>
+        <constructor-arg ref="baz"/>
+    </bean>
+
+    <bean id="bar" class="x.y.Bar"/>
+
+    <bean id="baz" class="x.y.Baz"/>
+</beans>
+
+若需要引用另一个bean，类型已知，构造函数就可以匹配参数类型(像上面的示例)。使用简单类型时， 想<value>true</true>,Srping不能决定value类型情况，Spring就不能自己匹配类型。例如：
+
+package examples;
+
+public class ExampleBean {
+
+    // Number of years to calculate the Ultimate Answer
+    private int years;
+
+    // The Answer to Life, the Universe, and Everything
+    private String ultimateAnswer;
+
+    public ExampleBean(int years, String ultimateAnswer) {
+        this.years = years;
+        this.ultimateAnswer = ultimateAnswer;
+    }
+
+}
+
+上面的场景中，如果使用type属性明确指定构造参数的类型,容器就可以使用类型匹配。比如：
+
+    <bean id="exampleBean" class="examples.ExampleBean">
+        <constructor-arg type="int" value="7500000"/>
+        <constructor-arg type="java.lang.String" value="42"/>
+    </bean>
+
+使用index属性明确指定构造参数的次序。比如
+
+    <bean id="exampleBean" class="examples.ExampleBean">
+        <constructor-arg index="0" value="7500000"/>
+        <constructor-arg index="1" value="42"/>
+    </bean>
+
+当构造函数有2个相同类型的参数,指定次序可以解决此种情况。注意index是从0开始
+
+    <bean id="exampleBean" class="examples.ExampleBean">
+        <constructor-arg name="years" value="7500000"/>
+        <constructor-arg name="ultimateAnswer" value="42"/>
+    </bean>
+
+记住，若要使Spring能从构造函数查找参数名字,代码在编译时必须开启调试模式。若你没有开启调试模式（或者不想），可以使用@ConstructorProperties JDK 注解明确指定构造参数的name。样例程序：
+
+package examples;
+
+public class ExampleBean {
+
+    // Fields omitted
+
+    @ConstructorProperties({"years", "ultimateAnswer"})
+    public ExampleBean(int years, String ultimateAnswer) {
+        this.years = years;
+        this.ultimateAnswer = ultimateAnswer;
+    }
+
+}
+}}}
+*Setter-based dependency injection*
+{{{
+不用写了, 天天在用的. 就是用 setter 方法注入.
+}}}
+
+= -------------------------------------------- =
+* 在非 web 应用中优雅的关闭 spring ioc 容器
+
+If you are using Spring’s IoC container in a non-web application environment; for example, in a rich client desktop environment; you register a shutdown hook with the JVM. Doing so ensures a graceful shutdown and calls the relevant destroy methods on your singleton beans so that all resources are released. Of course, you must still configure and implement these destroy callbacks correctly.
+
+To register a shutdown hook, you call the registerShutdownHook() method that is declared on the ConfigurableApplicationContext interface:
+
+import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+
+public final class Boot {
+
+    public static void main(final String[] args) throws Exception {
+
+        ConfigurableApplicationContext ctx = new ClassPathXmlApplicationContext(
+                new String []{"beans.xml"});
+
+        // add a shutdown hook for the above context...
+        ctx.registerShutdownHook();
+
+        // app runs here...
+
+        // main method exits, hook is called prior to the app shutting down...
+
+    }
+}
+= 使用 <context:property-placeholder /> =
+
+With the context namespace introduced in Spring 2.5, it is possible to configure property placeholders with a dedicated configuration element. One or more locations can be provided as a comma-separated list in the location attribute.
+
+<context:property-placeholder location="classpath:com/foo/jdbc.properties"/>
+
+The PropertyPlaceholderConfigurer not only looks for properties in the Properties file you specify. By default it also checks against the Java System properties if it cannot find a property in the specified properties files. You can customize this behavior by setting the systemPropertiesMode property of the configurer with one of the following three supported integer values:
+
+    -- never (0): Never check system properties
+    -- fallback (1): Check system properties if not resolvable in the specified properties files. This is the default.
+    -- override (2): Check system properties first, before trying the specified properties files. This allows system properties to override any other property source. 
+
+== 使用 <context:property-override /> ==
+
+PropertyOverrideConfigurer, 可以读取一个配置文件, 里面配置 bean 的属性值. 会覆盖 
+原来的 bean 属性的默认值, 如果配置文件中没有配置某个属性, 那个属性使用默认值.
+
+这个比较有用, 用这个重写 c3p0 的 spring 配置文件吧!
+
+With the context namespace introduced in Spring 2.5, it is possible to configure property overriding with a dedicated configuration element:
+
+<context:property-override location="classpath:override.properties"/>
+
+Properties file configuration lines take this format:
+
+beanName.property=value
+
+For example:
+
+dataSource.driverClassName=com.mysql.jdbc.Driver
+dataSource.url=jdbc:mysql:mydb
+
+This example file can be used with a container definition that contains a bean called dataSource, which has driver and url properties.
+
+= 7.9 Annotation-based container configuration =
+
+
+
