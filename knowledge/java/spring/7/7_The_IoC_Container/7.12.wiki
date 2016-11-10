@@ -1,0 +1,83 @@
+= 7.12 Java-based container configuration =
+* 7.12.1 Basic concepts: @Bean and @Configuration
+{{{
+java configuration 中的核心事物是 @Configuration 注解的类和 @Bean 注解的方法.
+
+@Bean 用来实例化, 配置, 初始化一个新对象, 让 spring ioc 来管理. 就像 xml 中的 
+<bean/> 元素.
+
+@Bean 可以在 @Component 的类中使用, 但是一般都配合 @Configuration 使用.
+
+一个类由 @Configuration 注解指明了这个类的主要目的是作为一个 bean 定义的源文件.
+
+The simplest possible @Configuration class would read as follows:
+
+@Configuration
+public class AppConfig {
+
+    @Bean
+    public MyService myService() {
+        return new MyServiceImpl();
+    }
+
+}
+
+The AppConfig class above would be equivalent to the following Spring <beans/> XML:
+
+<beans>
+    <bean id="myService" class="com.acme.services.MyServiceImpl"/>
+</beans>
+}}}
+
+*推荐只在 @Configuration 的类中使用 @Bean.*
+* 7.12.2 Instantiating the Spring container using AnnotationConfigApplicationContext
+{{{
+AnnotationConfigApplicationContext
+
+当 @Configuration 类作为输入, 这个类即内部的 @Bean 方法都会注册为 bean 定义.
+
+  }}}
+*Simple construction*
+{{{
+This allows for completely XML-free usage of the Spring container:
+
+public static void main(String[] args) {
+    ApplicationContext ctx = new AnnotationConfigApplicationContext(AppConfig.class);
+    MyService myService = ctx.getBean(MyService.class);
+    myService.doStuff();
+}
+}}}
+*Building the container programmatically using register(Class<?>…)*
+{{{
+An AnnotationConfigApplicationContext may be instantiated using a no-arg constructor and then configured using the register() method. This approach is particularly useful when programmatically building an AnnotationConfigApplicationContext.
+
+public static void main(String[] args) {
+    AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext();
+    ctx.register(AppConfig.class, OtherConfig.class);
+    ctx.register(AdditionalConfig.class);
+    ctx.refresh();
+    MyService myService = ctx.getBean(MyService.class);
+    myService.doStuff();
+}
+  }}}
+*Enabling component scanning with scan(String…)*
+{{{
+To enable component scanning, just annotate your @Configuration class as follows:
+
+@Configuration
+@ComponentScan(basePackages = "com.acme")
+public class AppConfig  {
+    ...
+}
+
+AnnotationConfigApplicationContext 的 scan 方法提供了相同的功能.
+
+public static void main(String[] args) {
+    AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext();
+    ctx.scan("com.acme");
+    ctx.refresh();
+    MyService myService = ctx.getBean(MyService.class);
+}
+
+  }}}
+

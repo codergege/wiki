@@ -1,5 +1,7 @@
 = 7 The IoC Container =
 
+* [[7_The_IoC_Container/7.12|7.12 java-based container configuration]]
+
 * 7.1 Introduction to the Spring IoC container and beans
 {{{
 org.springframework.beans 和 org.springframework.context 这两个包是spring
@@ -292,5 +294,320 @@ This example file can be used with a container definition that contains a bean c
 
 = 7.9 Annotation-based container configuration =
 
+{{{
+注解注射比 xml 注射先执行, 因此, xml 会覆盖注解.
 
+用注解定义 bean, 即在 xml 配置文件中隐式的方式定义 bean, 需要在 xml 文件中定义一
+个 tag. 看下面的例子(注意, xml 中包含了 context 命名空间)
+
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:context="http://www.springframework.org/schema/context"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context.xsd">
+
+    <context:annotation-config/>
+
+</beans>
+
+注意: <context:annotation-config/> 只会扫描定义它的 application context 中的
+beans. 比如一个 web 程序中, WebApplicationContext 中为 DispatcherServlet 设置 
+<context:annotation-config/>, 它只会找 controller 中 @Autowired bean, 而不会去
+service 中去找.
+  }}}
+* 7.9.1 @Required
+{{{
+放在 setter 方法中(我觉得放在属性上没什么问题).
+指明这个属性必须在 configuratin time 赋值. 防止空异常.
+  }}}
+* @Autowired
+{{{
+可以放在 setter, constructor, 普通 method 上, 一般放属性上比较常用.
+可以对数组, 集合, 甚至 map 中.
+如果你希望控制数组, list 中 bean 的顺序的话, bean 中用 @Order 或标准的 @Priority 
+
+推荐使用 @Autowired 的 required 属性替代 @Required 注解.
+  }}}
+
+* 7.9.3 Fine-tuning annotation-based autowiring with @Primary
+{{{
+Let’s assume we have the following configuration that defines firstMovieCatalog as the primary MovieCatalog.
+
+@Configuration
+public class MovieConfiguration {
+
+    @Bean
+    @Primary
+    public MovieCatalog firstMovieCatalog() { ... }
+
+    @Bean
+    public MovieCatalog secondMovieCatalog() { ... }
+
+    // ...
+
+}
+
+With such configuration, the following MovieRecommender will be autowired with the firstMovieCatalog.
+
+public class MovieRecommender {
+
+    @Autowired
+    private MovieCatalog movieCatalog;
+
+    // ...
+
+}
+
+The corresponding bean definitions appear as follows.
+
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:context="http://www.springframework.org/schema/context"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context.xsd">
+
+    <context:annotation-config/>
+
+    <bean class="example.SimpleMovieCatalog" primary="true">
+        <!-- inject any dependencies required by this bean -->
+    </bean>
+
+    <bean class="example.SimpleMovieCatalog">
+        <!-- inject any dependencies required by this bean -->
+    </bean>
+
+    <bean id="movieRecommender" class="example.MovieRecommender"/>
+
+</beans>
+  }}}
+
+* 7.9.4 Fine-tuning annotation-based autowiring with qualifiers
+有时候同个类型有多个 bean, 那就用 @Qualifier 进行更细粒度的控制.
+{{{
+public class MovieRecommender {
+
+    @Autowired
+    @Qualifier("main")
+    private MovieCatalog movieCatalog;
+
+    // ...
+
+}
+
+@Qualifier注解也可以在构造参数或者方法参数上使用:
+
+public class MovieRecommender {
+
+    private MovieCatalog movieCatalog;
+
+    private CustomerPreferenceDao customerPreferenceDao;
+
+    @Autowired
+    public void prepare(@Qualifier("main")MovieCatalog movieCatalog,
+            CustomerPreferenceDao customerPreferenceDao) {
+        this.movieCatalog = movieCatalog;
+        this.customerPreferenceDao = customerPreferenceDao;
+    }
+
+    // ...
+
+}
+
+下面看看相应的bean定义，也就是上例中Qualifier("main")的bean是如何定义的，也就是如何制定bean的Qualifier：
+
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:context="http://www.springframework.org/schema/context"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context.xsd">
+
+    <context:annotation-config/>
+
+    <bean class="example.SimpleMovieCatalog">
+        <qualifier value="main"/>
+
+        <!-- inject any dependencies required by this bean -->
+    </bean>
+
+    <bean class="example.SimpleMovieCatalog">
+        <qualifier value="action"/>
+
+        <!-- inject any dependencies required by this bean -->
+    </bean>
+
+    <bean id="movieRecommender" class="example.MovieRecommender"/>
+
+</beans>
+  }}}
+*用 bean 的 id, name 也是可以的, 对应于 java-based bean 定义, 这种更常见*
+*JSR-250 的 Resource 注解是基于 name 的, 不需要对集合或方法注入的话, 用这个更方便*
+
+* 7.9.7 @Resource
+* 7.9.8 @PostConstruct and @PreDestroy
+{{{
+CommonAnnotationBeanPostProcessor 不仅认识 @Resource, 还包括 JSR-250 lifecycle
+的注解. 
+
+public class CachingMovieLister {
+
+    @PostConstruct
+    public void populateMovieCache() {
+        // populates the movie cache upon initialization...
+    }
+
+    @PreDestroy
+    public void clearMovieCache() {
+        // clears the movie cache upon destruction...
+    }
+
+}
+  }}}
+* 7.10 Classpath scanning and managed components
+* 7.10.1 @Component and further stereotype annotations (更多的代码层注解)
+{{{
+@Repository 标记 repository 层的类(DAO 层).
+@Component, @Service, and @Controller.
+
+  }}}
+* 7.10.3 Automatically detecting classes and registering bean definitions
+{{{
+spring 可以自动检测 stereotyped classes 并在 application 中注册对应的
+BeanDefinitions.
+
+比如下面两个类是可以自动检测的:
+
+@Service
+public class SimpleMovieLister {
+
+    private MovieFinder movieFinder;
+
+    @Autowired
+    public SimpleMovieLister(MovieFinder movieFinder) {
+        this.movieFinder = movieFinder;
+    }
+
+}
+
+@Repository
+public class JpaMovieFinder implements MovieFinder {
+    // implementation elided for clarity
+}
+
+为了自动检测上面的两个 class, 你需要增加一个 @ComponentScan 到 @Configuration
+class 中. 用 basePackage 属性指定这两个 class 的共同父包.
+
+@Configuration
+@ComponentScan(basePackages = "org.example")
+public class AppConfig  {
+    ...
+}
+
+为了更简洁, 可以使用 value 属性, @ComponentScan("org.example").
+
+或者在 xml 中进行配置:
+
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:context="http://www.springframework.org/schema/context"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context.xsd">
+
+    <context:component-scan base-package="org.example"/>
+
+</beans>
+
+注意: <context:component-scan> 隐式的 enables <context:annotation-config>
+的功能. 此外, 当使用 component-scan 元素时, AutowiredAnnotationBeanPostProcessor 
+和 CommonAnnotationBeanPostProcessor 都会隐式启用. 意味着这两个组件也是自动探测和
+注入的, 有这些都不需要XML配置
+
+注意:
+扫描类包需要相应的目录在classpath内存在。使用Ant构建JAR包时，确保打包任务不要开启仅打包文件(无需相应的目录)选项。当然了，在某些环境装因为安全策略，classpath目录也许不能访问。比如，基于JDK1.7.0_45或更高版本的JDK的单独的应用(需要在manifests包清单中设置信任类库Trusted-Library；详情参看http://stackoverflow.com/questions/19394570/java-jre-7u45-breaks-classloader-getresources)
+
+
+在 gradle 文件中, 我已经加入了 'Trusted-Library': true.
+
+
+  }}}
+* 7.10.4 Using filters to customize scanning
+{{{
+可以过滤哪些扫描, 哪些不扫描. 可以使用 @Component 注解的 includeFilters 和
+excludeFilters 参数(xml 的话就是 include-filter, exclude-filter 子元素).
+
+| Filter Type          | Example Expression         | Description                                                          |
+| annotation (default) | org.example.SomeAnnotation | 一个注解, 声明在目标组件类级别上的                                   |
+| assignable           | org.example.SomeClass      | 一个类(或接口), 目标组件的类                                         |
+| aspectj              | org.example..*Service+     | 一个 AspectJ 类型表达式, 匹配目标组件                                |
+| regex                | org\.example\.Default.*    | 一个正则表达式, 匹配目标组件的类名                                   |
+| custom               | org.example.MyTypeFilter   | 一个自定义的实现, 实现 org.springframework.core.type.TypeFilter 接口 |
+
+The following example shows the configuration ignoring all @Repository annotations and using "stub" repositories instead.
+
+@Configuration
+@ComponentScan(basePackages = "org.example",
+        includeFilters = @Filter(type = FilterType.REGEX, pattern = ".*Stub.*Repository"),
+        excludeFilters = @Filter(Repository.class))
+public class AppConfig {
+    ...
+}
+
+and the equivalent using XML
+
+<beans>
+    <context:component-scan base-package="org.example">
+        <context:include-filter type="regex"
+                expression=".*Stub.*Repository"/>
+        <context:exclude-filter type="annotation"
+                expression="org.springframework.stereotype.Repository"/>
+    </context:component-scan>
+</beans>
+	
+
+
+  }}}
+* 7.10.6 Naming autodetected components
+{{{
+默认的, 任意 spring sterotype 注解(@Component, @Repository, @Service, and
+@Controller) 的 value 属性对应的 bean 定义中的 name.
+
+ For example, if the following two components were detected, the names would be myMovieLister and movieFinderImpl:
+
+@Service("myMovieLister")
+public class SimpleMovieLister {
+    // ...
+}
+
+@Repository
+public class MovieFinderImpl implements MovieFinder {
+    // ...
+}
+
+
+  }}}
+* 7.10.7 Providing a scope for autodetected components
+{{{
+spring 管理的组件, 为自动检测组件默认的并最常用的 scope 是 singleton.有时候你想
+使用不同的 scope, 可以使用 @Scope 注解.
+
+@Scope("prototype")
+@Repository
+public class MovieFinderImpl implements MovieFinder {
+    // ...
+}
+
+
+  }}}
+* 7.11 Using JSR 330 Standard Annotations
 
