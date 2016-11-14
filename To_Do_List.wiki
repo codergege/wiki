@@ -2,6 +2,15 @@
 
 == [[dailytask/dailytask|dailytask]] ==
 
+== primary ==
+* [ ] junit4 in action -> spring test
+* [ ] java 反射
+* [ ] aop
+* [ ] poi
+* [ ] shiro
+* [ ] 项目
+* [ ] miaov javascript
+
 == Knowledge ==
 
 === Programming ===
