@@ -3,6 +3,7 @@
 == [[dailytask/dailytask|dailytask]] ==
 
 == primary ==
+* [ ] gssm 项目, 完成 springmvc employee 的增删改查 demo
 * [ ] junit4 in action -> spring test
 * [ ] java 反射
 * [ ] aop
