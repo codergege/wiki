@@ -1,6 +1,10 @@
 {{{
 -- 安装一些依赖
 apt-get install libncurses5-dev python-dev libgtk-3-dev libx11-dev libxt-dev libxpm-dev
+-- 安装一些工具
+sudo apt-get install p7zip-full p7zip-rar
+sudo apt-get install dtrx
+
 1. git
 第一个安装的东西必须是 git, 因为很多配置, 脚本要去 github clone 下来
 1) apt-get install git
@@ -98,6 +102,8 @@ sh install_eclipsexx.sh
 
 2. 配置 eclipse
 
+perspective 精简, 字体.
+
 key: previous tab:
 unbinding key: 
 3. 安装 eclipse 插件
@@ -106,3 +112,8 @@ gradle
 }}}
 
 * 安装坚果云
+* 其他的一些安装
+{{{
+sudo apt install xchm
+
+  }}}
