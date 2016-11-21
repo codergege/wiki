@@ -5,3 +5,5 @@
 * [[fundamentals/stream|流式操作]]
 * [[fundamentals/reflection|反射]] -- java 反射
 * [[fundamentals/collections|集合]]
+* [[fundamentals/jar|打包 jar]]
+* [[fundamentals/guava|guava]]

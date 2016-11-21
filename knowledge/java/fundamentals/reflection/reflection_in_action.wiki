@@ -1,0 +1,78 @@
+= reflection in action =
+
+* 1 A few basics
+{{{
+使用反射技术的必要步骤:
+
+1) 检查程序的结构或数据.
+
+2) 依据检查结果做出决定
+
+3) 基于决定, 改变程序的行为, 结构, 或数据.
+
+
+一个小例子:
+
+public class HelloWorld {
+	@Test
+	public void printName() {
+		System.out.println(this.getClass().getName());
+	}
+}
+
+这个例子就包含了这 3 个步骤. printName 方法用 this.getClass() 检查本类的 Class.
+决定打印什么东西是委托给那个 Class 对象的. printName 方法基于决定打印返回的名称.
+  }}}
+* 1.2 运行时给未知类型的对象设置值
+{{{
+
+	public static void setObjectColor(Object obj, String color) {
+		Class cls = obj.getClass();
+		try {
+			Method method = cls.getMethod("setColor", String.class);
+			method.invoke(obj, color);
+		} catch (NoSuchMethodException e) {
+			log.debug(e.getLocalizedMessage());
+			e.printStackTrace();
+		} catch (SecurityException e) {
+			log.debug(e.getLocalizedMessage());
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			log.debug(e.getLocalizedMessage());
+			e.printStackTrace();
+		} catch (IllegalArgumentException e) {
+			log.debug(e.getLocalizedMessage());
+			e.printStackTrace();
+		} catch (InvocationTargetException e) {
+			log.debug(e.getLocalizedMessage());
+			e.printStackTrace();
+		}
+	}
+  }}}
+* 1.5 使用类对象代表方法的参数类型
+{{{
+interface, Array, primative 类型的参数如何用 class object 指定:
+
+例如想 introspect java.util.Vector:
+
+public class Vector ... {
+	public synchronized boolean addAll( Collection c ) ...
+	public synchronized void copyInto( Object[] anArray ) ...
+	public synchronized Object get( int index ) ...
+}
+
+Method m = Vector.class.getMethod("get", new Class[] {int.class});
+Method m = Vector.class.getMethod( "addAll",
+									new Class[] {Collection.class} );
+Method m = Vector.class.getMethod( "copyInto", new Class[]{Object[].class} );
+  }}}
+* 1.6 理解方法对象
+{{{
+Method 的 invoke 方法, 如果这个 Method 对象代表的是一个 static 类型的方法, 那么
+第一个参数可以写 null. 如果没有参数, 第二个参数可以写 0 长度的数组或写 null.
+
+返回值如果是 primative 类型的, 那么需要包装再解包装:
+
+Method method = cls.getMethod("add", int.class, int.class);
+int result = ((Integer)method.invoke(header, 2, 5)).intValue();
+}}}
