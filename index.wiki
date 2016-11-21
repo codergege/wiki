@@ -1,5 +1,7 @@
 = To Do List =
 * [[To_Do_List|To Do List]]								-- things to be done
+= workout =
+* [[workout/workout|健身计划]]
 = Knowledge =
 == Vabulary ==
 * [[knowledge/dic|词汇]]								-- 词汇 
