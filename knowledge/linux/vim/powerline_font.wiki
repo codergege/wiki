@@ -1,0 +1,5 @@
+= powerline 字体 =
+1. git clone https://github.com/powerline/fonts.git 或者去 nutstore/installation/font
+2. cd 进目录
+3. ./install.sh
+4. 打开 tweak tool 改变字体
